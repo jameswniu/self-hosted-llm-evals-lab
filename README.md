@@ -53,17 +53,17 @@ Override the model: `MODEL=mistral:7b make eval`
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': {'lineColor': '#94a3b8', 'edgeLabelBackground': '#ffffff', 'clusterBkg': '#ffffff'}, 'flowchart': {'curve': 'linear'}}}%%
 flowchart TD
-    classDef serving fill:#4C8BF5,stroke:#2563EB,color:#ffffff,stroke-width:2px
-    classDef eval fill:#F0A030,stroke:#D97706,color:#ffffff,stroke-width:2px
-    classDef ops fill:#2DD4A8,stroke:#0D9488,color:#ffffff,stroke-width:2px
+    classDef serving fill:#5B8DEF,stroke:#3A6BC5,color:#ffffff,stroke-width:2px
+    classDef eval fill:#E8725A,stroke:#C4543E,color:#ffffff,stroke-width:2px
+    classDef ops fill:#45B7AA,stroke:#2E8F84,color:#ffffff,stroke-width:2px
     classDef cache fill:#9F7AEA,stroke:#7C3AED,color:#ffffff,stroke-width:2px
 
-    OL(["Ollama / llama3.1:8b Q4_0"]):::serving
-    BR["Benchmark Runner\nlm-eval-harness"]:::eval
-    AB["Ablation Engine\noptimize_prompt.py"]:::eval
-    LT["Load Tester\nThreadPoolExecutor"]:::ops
-    DV["Determinism Validator\n5x5 matrix"]:::ops
-    PC[("SHA-256 Prompt Cache")]:::cache
+    OL(["Ollama<br/>llama3.1:8b Q4_0"]):::serving
+    BR["Benchmark Runner<br/>lm-eval-harness"]:::eval
+    AB["Ablation Engine<br/>optimize_prompt.py"]:::eval
+    LT["Load Tester<br/>ThreadPoolExecutor"]:::ops
+    DV["Determinism Validator<br/>5x5 matrix"]:::ops
+    PC[("SHA-256<br/>Prompt Cache")]:::cache
 
     OL -->|"hellaswag, mmlu"| BR
     OL -->|"templates x decoding"| AB
