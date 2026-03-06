@@ -51,19 +51,19 @@ Override the model: `MODEL=mistral:7b make eval`
 ## Architecture
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b'}}}%%
+%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#94a3b8', 'edgeLabelBackground': '#ffffff', 'clusterBkg': '#ffffff'}, 'flowchart': {'curve': 'linear'}}}%%
 flowchart TD
-    classDef blue fill:#3b82f6,stroke:#1e40af,color:#ffffff
-    classDef orange fill:#f97316,stroke:#9a3412,color:#ffffff
-    classDef green fill:#22c55e,stroke:#166534,color:#ffffff
-    classDef purple fill:#8b5cf6,stroke:#5b21b6,color:#ffffff
+    classDef serving fill:#4C8BF5,stroke:#2563EB,color:#ffffff,stroke-width:2px
+    classDef eval fill:#F0A030,stroke:#D97706,color:#ffffff,stroke-width:2px
+    classDef ops fill:#2DD4A8,stroke:#0D9488,color:#ffffff,stroke-width:2px
+    classDef cache fill:#9F7AEA,stroke:#7C3AED,color:#ffffff,stroke-width:2px
 
-    OL(["Ollama / llama3.1:8b Q4_0"]):::blue
-    BR["Benchmark Runner\nlm-eval-harness"]:::orange
-    AB["Ablation Engine\noptimize_prompt.py"]:::orange
-    LT["Load Tester\nThreadPoolExecutor"]:::green
-    DV["Determinism Validator\n5x5 matrix"]:::green
-    PC[("SHA-256 Prompt Cache")]:::purple
+    OL(["Ollama / llama3.1:8b Q4_0"]):::serving
+    BR["Benchmark Runner\nlm-eval-harness"]:::eval
+    AB["Ablation Engine\noptimize_prompt.py"]:::eval
+    LT["Load Tester\nThreadPoolExecutor"]:::ops
+    DV["Determinism Validator\n5x5 matrix"]:::ops
+    PC[("SHA-256 Prompt Cache")]:::cache
 
     OL -->|"hellaswag, mmlu"| BR
     OL -->|"templates x decoding"| AB
