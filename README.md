@@ -51,12 +51,12 @@ Override the model: `MODEL=mistral:7b make eval`
 ## Architecture
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#94a3b8', 'edgeLabelBackground': '#ffffff', 'clusterBkg': '#ffffff'}, 'flowchart': {'curve': 'linear'}}}%%
+%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b', 'edgeLabelBackground': '#ffffff', 'clusterBkg': '#ffffff'}, 'flowchart': {'curve': 'linear'}}}%%
 flowchart TD
-    classDef serving fill:#5B8DEF,stroke:#3A6BC5,color:#ffffff,stroke-width:2px
-    classDef eval fill:#E8725A,stroke:#C4543E,color:#ffffff,stroke-width:2px
-    classDef ops fill:#45B7AA,stroke:#2E8F84,color:#ffffff,stroke-width:2px
-    classDef cache fill:#9F7AEA,stroke:#7C3AED,color:#ffffff,stroke-width:2px
+    classDef serving fill:#2D5FAF,stroke:#1A3D7A,color:#ffffff,stroke-width:2px
+    classDef eval fill:#C44B3B,stroke:#8B2E22,color:#ffffff,stroke-width:2px
+    classDef ops fill:#278F84,stroke:#1A6359,color:#ffffff,stroke-width:2px
+    classDef cache fill:#7B52C7,stroke:#53348A,color:#ffffff,stroke-width:2px
 
     OL(["Ollama<br/>llama3.1:8b Q4_0"]):::serving
     BR["Benchmark Runner<br/>lm-eval-harness"]:::eval
