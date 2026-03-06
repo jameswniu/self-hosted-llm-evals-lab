@@ -1,11 +1,22 @@
-# llm-serving-lab
+# self-hosted-llm-evals-lab
 
-Benchmark, load-test, and optimize open-source LLMs you serve as APIs.
+Eval, benchmark, and optimize open-source LLMs you self-host as APIs.
 
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![lm-eval-harness](https://img.shields.io/badge/lm--eval--harness-v0.4%2B-orange)
 ![Ollama](https://img.shields.io/badge/Ollama-compatible-purple)
+
+## The Problem
+
+You downloaded an open-source LLM. You're serving it with Ollama or vLLM. But you're flying blind:
+
+- You don't know how accurate it actually is on your tasks
+- Every "prompt engineering tip" you followed might be making things worse (we found CoT drops accuracy 25pp on small models)
+- You have no idea if it can handle real traffic
+- You can't tell if outputs are even reproducible
+
+This toolkit gives you answers before you ship to production.
 
 ## What This Does
 
@@ -15,6 +26,14 @@ Benchmark, load-test, and optimize open-source LLMs you serve as APIs.
 - **Optimize prompts** via systematic ablation (templates, CoT, few-shot, self-consistency voting)
 
 Works with [Ollama](https://ollama.com), or any OpenAI-compatible `/v1/chat/completions` endpoint.
+
+## Use Cases
+
+- **"Is my model accurate enough?"** -- Run standardized benchmarks (MMLU, HellaSwag) on any model you're serving. Compare Llama vs Mistral vs Gemma on the same tasks.
+- **"Are my prompts actually helping?"** -- Test whether chain-of-thought, few-shot, or instruction prompts improve or hurt your specific model. (Spoiler: at 8B parameters, simpler prompts win.)
+- **"Can it handle production traffic?"** -- Load-test your endpoint with concurrent requests. Get P50/P95/P99 latency, TTFT, and throughput numbers before users hit it.
+- **"Why does it give different answers each time?"** -- Validate determinism with reproducibility checks. Pin down greedy decoding + fixed seed to get consistent outputs.
+- **"Which model should I deploy?"** -- Run the same eval suite across models and compare accuracy, latency, and throughput side-by-side.
 
 ## Quick Start
 
@@ -32,20 +51,28 @@ Override the model: `MODEL=mistral:7b make eval`
 ## Architecture
 
 ```mermaid
-graph TD
-    A["Ollama / Any OpenAI-compatible endpoint"] --> B["Benchmark Runner"]
-    A --> C["Prompt Ablation Engine"]
-    A --> D["Load Tester"]
-    A --> E["Determinism Validator"]
+%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b'}}}%%
+flowchart TD
+    classDef blue fill:#3b82f6,stroke:#1e40af,color:#ffffff
+    classDef orange fill:#f97316,stroke:#9a3412,color:#ffffff
+    classDef green fill:#22c55e,stroke:#166534,color:#ffffff
+    classDef purple fill:#8b5cf6,stroke:#5b21b6,color:#ffffff
 
-    B -->|"lm-eval-harness"| F["MMLU, HellaSwag, Custom Tasks"]
-    C -->|"templates x decoding"| G["Accuracy by Strategy"]
-    D -->|"concurrent requests"| H["TTFT, P50/P95/P99, tok/s"]
-    E -->|"greedy + fixed seed"| I["5x5 Reproducibility Matrix"]
+    OL(["Ollama / llama3.1:8b Q4_0"]):::blue
+    BR["Benchmark Runner\nlm-eval-harness"]:::orange
+    AB["Ablation Engine\noptimize_prompt.py"]:::orange
+    LT["Load Tester\nThreadPoolExecutor"]:::green
+    DV["Determinism Validator\n5x5 matrix"]:::green
+    PC[("SHA-256 Prompt Cache")]:::purple
 
-    B --> J["SHA-256 Prompt Cache"]
-    C --> J
-    E --> J
+    OL -->|"hellaswag, mmlu"| BR
+    OL -->|"templates x decoding"| AB
+    OL -->|"concurrent streaming"| LT
+    OL -->|"greedy + seed=42"| DV
+
+    BR -.->|"cache hit"| PC
+    AB -.->|"cache hit"| PC
+    DV -.->|"cache hit"| PC
 ```
 
 Every (model, prompt, params) call is SHA-256 hashed and cached to disk. Repeated evaluations hit the cache instead of the inference endpoint, which makes ablation runs efficient and results reproducible. Deterministic baselines (temperature=0, top_k=1, fixed seed) are enforced before any comparison.
@@ -110,7 +137,7 @@ Stop sequences reduce total latency for short-answer evaluation tasks. For scali
 ## Project Structure
 
 ```
-llm-serving-lab/
+self-hosted-llm-evals-lab/
 ├── Makefile                    # All commands
 ├── README.md
 ├── LICENSE
