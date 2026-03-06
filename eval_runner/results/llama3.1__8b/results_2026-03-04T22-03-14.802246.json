@@ -1,0 +1,200 @@
+{
+  "results": {
+    "hellaswag_generative": {
+      "alias": "hellaswag_generative",
+      "exact_match,get_answer": 0.0,
+      "exact_match_stderr,get_answer": 0.0
+    },
+    "mmlu_all_generative": {
+      "alias": "mmlu_all_generative",
+      "exact_match,get_answer": 0.1,
+      "exact_match_stderr,get_answer": 0.04285714285714283
+    }
+  },
+  "group_subtasks": {
+    "hellaswag_generative": [],
+    "mmlu_all_generative": []
+  },
+  "configs": {
+    "hellaswag_generative": {
+      "task": "hellaswag_generative",
+      "dataset_path": "Rowan/hellaswag",
+      "validation_split": "validation",
+      "process_docs": "def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:\n    def _process(doc):\n        ctx = doc[\"ctx_a\"] + \" \" + doc[\"ctx_b\"].capitalize()\n        choices = [preprocess(ending) for ending in doc[\"endings\"]]\n        label = int(doc[\"label\"])\n        letters = [\"A\", \"B\", \"C\", \"D\"]\n        return {\n            \"query\": preprocess(doc[\"activity_label\"] + \": \" + ctx),\n            \"choices\": choices,\n            \"answer\": letters[label],\n        }\n\n    return dataset.map(_process)\n",
+      "doc_to_text": "def doc_to_text(doc):\n    query = doc[\"query\"]\n    choices = doc[\"choices\"]\n    letters = [\"A\", \"B\", \"C\", \"D\"]\n    choices_text = \"\\n\".join(\n        f\"{letter}. {choice}\" for letter, choice in zip(letters, choices)\n    )\n    return f\"{query}\\n{choices_text}\\nAnswer:\"\n",
+      "doc_to_target": "{{answer}}",
+      "unsafe_code": false,
+      "description": "",
+      "target_delimiter": " ",
+      "fewshot_delimiter": "\n\n",
+      "num_fewshot": 0,
+      "metric_list": [
+        {
+          "metric": "exact_match",
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "ignore_case": true,
+          "ignore_punctuation": true
+        }
+      ],
+      "output_type": "generate_until",
+      "generation_kwargs": {
+        "until": [
+          "\n\n"
+        ],
+        "max_gen_toks": 100,
+        "temperature": 0.0,
+        "do_sample": false
+      },
+      "repeats": 1,
+      "filter_list": [
+        {
+          "name": "get_answer",
+          "filter": [
+            {
+              "function": "multi_choice_regex",
+              "group_select": -1,
+              "ignore_case": true,
+              "ignore_punctuation": true,
+              "regex_pattern": "\\(([A-D])\\)"
+            },
+            {
+              "function": "take_first"
+            }
+          ]
+        }
+      ],
+      "should_decontaminate": false,
+      "metadata": {
+        "version": 1.0,
+        "description": "Generative version of HellaSwag for use with chat completion APIs that do not support logprobs.\n",
+        "model": "llama3.1:8b",
+        "base_url": "http://localhost:11434/v1/chat/completions",
+        "num_concurrent": 1,
+        "max_retries": 3,
+        "tokenized_requests": false
+      }
+    },
+    "mmlu_all_generative": {
+      "task": "mmlu_all_generative",
+      "dataset_path": "cais/mmlu",
+      "dataset_name": "all",
+      "test_split": "test",
+      "doc_to_text": "{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer:",
+      "doc_to_target": "{{['A', 'B', 'C', 'D'][answer]}}",
+      "unsafe_code": false,
+      "description": "",
+      "target_delimiter": " ",
+      "fewshot_delimiter": "\n\n",
+      "num_fewshot": 0,
+      "metric_list": [
+        {
+          "metric": "exact_match",
+          "aggregation": "mean",
+          "higher_is_better": true,
+          "ignore_case": true,
+          "ignore_punctuation": true
+        }
+      ],
+      "output_type": "generate_until",
+      "generation_kwargs": {
+        "until": [
+          "\n\n"
+        ],
+        "max_gen_toks": 100,
+        "temperature": 0.0,
+        "do_sample": false
+      },
+      "repeats": 1,
+      "filter_list": [
+        {
+          "name": "get_answer",
+          "filter": [
+            {
+              "function": "multi_choice_regex",
+              "group_select": -1,
+              "ignore_case": true,
+              "ignore_punctuation": true,
+              "regex_pattern": "\\(([A-D])\\)"
+            },
+            {
+              "function": "take_first"
+            }
+          ]
+        }
+      ],
+      "should_decontaminate": false,
+      "metadata": {
+        "version": 1.0,
+        "description": "Generative MMLU for use with chat completion APIs that do not support logprobs. Uses multi_choice_regex filter to extract letter answers from verbose model responses.\n",
+        "model": "llama3.1:8b",
+        "base_url": "http://localhost:11434/v1/chat/completions",
+        "num_concurrent": 1,
+        "max_retries": 3,
+        "tokenized_requests": false
+      }
+    }
+  },
+  "versions": {
+    "hellaswag_generative": 1.0,
+    "mmlu_all_generative": 1.0
+  },
+  "n-shot": {
+    "hellaswag_generative": 0,
+    "mmlu_all_generative": 0
+  },
+  "higher_is_better": {
+    "hellaswag_generative": {
+      "exact_match": true
+    },
+    "mmlu_all_generative": {
+      "exact_match": true
+    }
+  },
+  "n-samples": {
+    "mmlu_all_generative": {
+      "original": 14042,
+      "effective": 50
+    },
+    "hellaswag_generative": {
+      "original": 10042,
+      "effective": 50
+    }
+  },
+  "config": {
+    "model": "local-chat-completions",
+    "model_args": "model=llama3.1:8b,base_url=http://localhost:11434/v1/chat/completions,num_concurrent=1,max_retries=3,tokenized_requests=False",
+    "batch_size": "1",
+    "batch_sizes": [],
+    "device": null,
+    "use_cache": null,
+    "limit": 50.0,
+    "bootstrap_iters": 100000,
+    "gen_kwargs": null,
+    "random_seed": 42,
+    "numpy_seed": 42,
+    "torch_seed": 42,
+    "fewshot_seed": 42
+  },
+  "git_hash": "03965ae",
+  "date": 1772690499.9605498,
+  "pretty_env_info": "PyTorch version: 2.8.0\nIs debug build: False\nCUDA used to build PyTorch: None\nROCM used to build PyTorch: N/A\n\nOS: macOS 26.3 (arm64)\nGCC version: Could not collect\nClang version: 17.0.0 (clang-1700.6.3.2)\nCMake version: Could not collect\nLibc version: N/A\n\nPython version: 3.9.6 (default, Dec  2 2025, 07:27:58)  [Clang 17.0.0 (clang-1700.6.3.2)] (64-bit runtime)\nPython platform: macOS-26.3-arm64-arm-64bit\nIs CUDA available: False\nCUDA runtime version: No CUDA\nCUDA_MODULE_LOADING set to: N/A\nGPU models and configuration: No CUDA\nNvidia driver version: No CUDA\ncuDNN version: No CUDA\nHIP runtime version: N/A\nMIOpen runtime version: N/A\nIs XNNPACK available: True\n\nCPU:\nApple M4 Max\n\nVersions of relevant libraries:\n[pip3] numpy==2.0.2\n[pip3] torch==2.8.0\n[conda] Could not collect",
+  "transformers_version": "4.57.6",
+  "lm_eval_version": "0.4.9.1",
+  "upper_git_hash": null,
+  "task_hashes": {
+    "mmlu_all_generative": "3d4d15da154d1acb1b90bb6047dc00907fc6f1522cda0e2e24f54ab3ea95f9fd",
+    "hellaswag_generative": "48ccc88cdd13e7bd90a040b044a5d1327a6859030c46972608f98fb436214800"
+  },
+  "model_source": "local-chat-completions",
+  "model_name": "llama3.1:8b",
+  "model_name_sanitized": "llama3.1__8b",
+  "system_instruction": null,
+  "system_instruction_sha": null,
+  "fewshot_as_multiturn": false,
+  "chat_template": "",
+  "chat_template_sha": null,
+  "start_time": 6.810087083,
+  "end_time": 120.855249083,
+  "total_evaluation_time_seconds": "114.045162"
+}

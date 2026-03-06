@@ -1,0 +1,33 @@
+task: mmlu_all_generative
+dataset_path: cais/mmlu
+dataset_name: all
+test_split: test
+output_type: generate_until
+doc_to_text: "Answer the following multiple choice question. Reply with ONLY the letter (A, B, C, or D) of the correct answer.\n\n{{question.strip()}}\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\nThe correct answer is:"
+doc_to_target: "{{['A', 'B', 'C', 'D'][answer]}}"
+generation_kwargs:
+  until:
+    - "\n\n"
+  max_gen_toks: 100
+  temperature: 0
+  do_sample: false
+filter_list:
+  - name: get_answer
+    filter:
+      - function: regex
+        regex_pattern: "([A-D])"
+        group_select: 0
+        fallback: "[invalid]"
+      - function: take_first
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+metadata:
+  version: 1.0
+  description: >
+    Generative MMLU for use with chat completion APIs that do not
+    support logprobs. Uses multi_choice_regex filter to extract
+    letter answers from verbose model responses.

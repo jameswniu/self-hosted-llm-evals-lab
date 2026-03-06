@@ -1,0 +1,202 @@
+[
+  {
+    "context": "Several food items and dishes are laid out on a table. Meat product and other items are used to create a sandwich. then a bento shaper",
+    "endings": [
+      "is put into a skillet on the stove.",
+      "is used to create an image in the sandwich.",
+      "is put together and put into the oven.",
+      "depositions and improvement of the sandwich."
+    ],
+    "label": 1
+  },
+  {
+    "context": "A man in a black vest is standing in a room. He throws darts at a dart board on the wall. a woman",
+    "endings": [
+      "stands next to him watching.",
+      "puts her arm down.",
+      "comes onto the screen and starts talking into a microphone.",
+      "puts darts on a board on the ground."
+    ],
+    "label": 0
+  },
+  {
+    "context": "[header] How to make money by having a house party [title] Find a couple friends to help plan the party. [step] Planning a killer house party is a lot easier when you've got accomplices to spread the time and responsibilities out to. Talk to your friends, and see who is interested in helping.",
+    "endings": [
+      "If there are not any friends that you think could help, enlist other people that might be willing to help. [title] Arrive at the house to check if all is okay.",
+      "This will make things a lot easier on you. Consider the following : [substeps] Who has what responsibilities.",
+      "See who thinks of the most people to host. You can even take turns hosting your party, but no one is guaranteed to get invited to the party and make the best impression.",
+      "They will help you plan where the party will occur and get you started. [substeps] Have everyone outside that circle of friends agree on a date and time of the party."
+    ],
+    "label": 1
+  },
+  {
+    "context": "[header] How to trim trees [title] Wear safety goggles, helmet, and purchase a step ladder. [step] Safety goggles and a helmet or hard hat will protect your head and eyes as you prune adult trees. You may also need a small step ladder to reach higher branches.",
+    "endings": [
+      "[title] Insert a mitten stake about two feet (- 4) away from the pruning necessities (tree). [step] You can purchase mitten stakes at most tree planting supply stores or online.",
+      "However, if the branch is located high in the air and requires an extension ladder, consult a professional instead of trying to do it yourself. [substeps] Purchase this equipment online or at a hardware store.",
+      "[title] Cut an \" x \" into the trunk of the tree. [step] Purchase a can of hand pruners from a hardware store and use a sharp knife to cut right through the trunk of the tree.",
+      "You may wear gloves to protect your face from the branch you are trimming. [substeps] You may wear long sleeved green or cotton gloves."
+    ],
+    "label": 1
+  },
+  {
+    "context": "The man working in the salon cuts off the woman's long hair and puts it in a bag. the man",
+    "endings": [
+      "then visits with several rolling rollers and styles the long hair.",
+      "wraps the bag in tissue paper and presents it to the representing.",
+      "combs and cuts the woman's hair as she sits.",
+      "leaves as the woman brushes her hair again."
+    ],
+    "label": 2
+  },
+  {
+    "context": "She inserts a tool into the vacuum and vacuums along the baseboards. She uses a special tool of the vacuum to vacuum around the sofa and the stair carpet. she",
+    "endings": [
+      "uses another tool of the vacuum to vacuum around windows.",
+      "folds the vacuum into a corner of the floor and lays in a pile of velvet with holes cut in to put on the end.",
+      "vacuums up the carpet with the soft mop but proceeds to vacuum all down the stairs.",
+      "removes the vacuum from the back of the sofa then drags it over to the middle of the carpet and uses it elegantly scraping off excess glue and wiping it off."
+    ],
+    "label": 0
+  },
+  {
+    "context": "A young boy is wearing a bandana and mowing a large yard. he",
+    "endings": [
+      "is unrelieved by the weeds and is barely smiling.",
+      "walks away from the camera as he pushes the mower.",
+      "moves and walks the mower but gets stuck because he is engaged in a game of ping pong with another boy.",
+      "seems to be doing a whole lot of things and talks to the camera from behind a white fence."
+    ],
+    "label": 1
+  },
+  {
+    "context": "[header] How to increase revenue in beauty salon [title] Call your merchant services provider or look on the internet and inquire about having gift cards custom designed to fit your salon. [title] Designate an area where you will keep all of your clients information, computer/filing cabinet/phone etc. [step] Make sure that the information ends up there, and only there.",
+    "endings": [
+      "[title] Visit the beauty salon website, and if you have not heard of the beauty salon wiki, sign up. [title] Search for a tub and water-supply service and find out if it has additional features.",
+      "Also find out if they will send you things that they are charging you for, such as cards, scissors/sharp tools, etc. [title] Choose the right colors and interior materials.",
+      "[title] Try to keep everything safe! [step] Even at the salon you will want to store your supplies so that no one gets confused and believes you will need to always keep it stored to do things you enjoy. [title] Having a grooming section set up will help too.",
+      "[title] Start collecting client information such as name, address, email address. [step] Let them know that this information is for your eyes only and this information will be used to send coupons and rewards."
+    ],
+    "label": 3
+  },
+  {
+    "context": "Two teams plays volley ball in an indoor gym surrounded by referees, marketing graphics and an audience in bleachers. two teams",
+    "endings": [
+      "play indoor volley ball as marketing signs bordering the playing floor change suddenly and morph in more signs.",
+      "of young men run and shoot at a brown ball.",
+      "are playing hurling as three midnighters from the american team compete and raise flaming stick.",
+      "of players play lacrosse in an indoor gym with referees and employees and gray uniforms at an indoor basketball court and with a black screen and an elevated black screen."
+    ],
+    "label": 0
+  },
+  {
+    "context": "[header] How to get discounts on amazon [title] Choose the products you want to peruse by the level of discount that is offered. [step] Go to tjshome.com/greatdeals.php and click on the percent, such as 50 percent or 90 percent, in the shopping category of your choice. [substeps] Navigate to a new window where all the products offered are all 50 or 90 percent off.",
+    "endings": [
+      "For the example, your current amazon store might have a number of low-value merchandise sold off. Then, you can pick up items that are off the charts.",
+      "Add a special discount on items you like. Those items will get significantly lesser than what were advertised on amazon.",
+      "Click on the \" discounts \" tab located in the left column. If you didn't open the discount tab, click on the \" store \" tab located in the right column.",
+      "Add the item to your cart to automatically receive the discount. [title] Go to cheapsally.com to find current amazon discounts in an easy to read format."
+    ],
+    "label": 3
+  },
+  {
+    "context": "[header] How to recover from zika [title] Stay hydrated. [step] As you recover from zika, make sure that you drink plenty of fluids. You can become dehydrated when you have zika, and having a fever can make dehydration even worse.",
+    "endings": [
+      "[substeps] Avoid refined, sugary drinks that are full of vitamins and minerals. Also skip sugary or carbonated beverages, as these can dry you out.",
+      "Drink at least the minimum amount of water each day (8 cups of water per day is recommended as the minimum), if not more. [substeps] Drinking non-caffeinated tea and/or electrolyte sports beverages is also a good way to stay hydrated.",
+      "You should also avoid consuming liquids that can irritate the irritated flesh of your throat and make it more painful to swallow. [substeps] Double as much water as you're drinking.",
+      "Don't drink solid beverages like milk or water. A glass of popsicles should be fine."
+    ],
+    "label": 1
+  },
+  {
+    "context": "The person uses the paint brush to apply the mixture to the white, cake fish laying on the paper. the person",
+    "endings": [
+      "scrape the white white fish on the paper with the brush to create a sauce.",
+      "adds powder and additional water to a small, plastic container.",
+      "adds the mixture to the wrapped sauce and rolls it up in the paper and smiles as the finished product.",
+      "starts painting the top of the curtain."
+    ],
+    "label": 1
+  },
+  {
+    "context": "The woman is petting her dog, and the dog licked her face. The woman is playing with her dog. the woman",
+    "endings": [
+      "holds the dog's hand and frites through his hair.",
+      "is talking to the man next to her.",
+      "walked with her black dog and then pet him.",
+      "lick the dog, rubbing his fur."
+    ],
+    "label": 2
+  },
+  {
+    "context": "One of the men in purple rides through a skate board park wearing the padded suit. another man in grey shirt",
+    "endings": [
+      "rides past the blue man riding the bike.",
+      "rides on a skateboard and falls on the ground causing the motionless rider to fall off.",
+      "is wearing a padded suit inside a skate park.",
+      "rides a skateboard on the half pipe ramp and does tricks."
+    ],
+    "label": 3
+  },
+  {
+    "context": "A large, gray, plug in curler set is shown and it has different sized curlers in 4 different colors with gray clips sitting next to it, and the woman picks up a few curlers and clips to show what they look like. the woman",
+    "endings": [
+      "is now in a sped up mode and is rolling her hair in the curlers, fastens them on her head with the clips and does this all the way until her head is filled with curlers.",
+      "gets into her lawnmower and begins mowing all of the grass, and in the background a dog is standing under the front hood of the mower.",
+      "waves her hands around and after about 30 seconds she points to the screen and shows off the turned on curlers.",
+      "puts them in her hair, turns them sides up and clips the ends down, then gets down on all fours."
+    ],
+    "label": 0
+  },
+  {
+    "context": "[header] How to improve a bird's diet [title] Do research on your bird. [step] Find out what kinds of food is specific to your bird's diet. For example, if you have a pet sparrow, you should feed it seeds, corn, and grains to keep it healthy.",
+    "endings": [
+      "[substeps] Avoid feeding your bird unhealthy food. It will damage the bird's digestive system and lead to negative health consequences.",
+      "If you will be introducing a new bird to your home, you will need to decide what kind of food to feed your bird. You may opt for the whole grain bird chick, lope or budgie.",
+      "If you have a chicken, see if it is fully grown. [substeps] If you don't live near a chicken farm or if you don't know your bird well, contact an avian vet for vaccinations.",
+      "[title] Use food from your bird's diet. [step] Buying a bird's natural food is easy, but if your bird has a specific diet, you will need to work on improving its diet as much as possible."
+    ],
+    "label": 0
+  },
+  {
+    "context": "[header] How to cook a heritage turkey [title] Preheat the oven to 450 degrees fahrenheit (232 degrees celsius). [title] Rinse the bird with cool water and then pat dry. [title] Coat the turkey with either butter or olive oil, both inside and out and under the skin.",
+    "endings": [
+      "[step] Be careful not to tear the skin. [title] Spread your favorite seasonings onto the outside of the bird, under the skin and in the cavity.",
+      "[title] Place turkey stock into a large (haddock-style) roasting pan. [step] Add 2 tablespoons olive oil and fry until the turkey is three-quarters browned.",
+      "[title] Put 1 cup (237 ml) of olive oil into the inside cavity and a pinch of salt. [title] Cut the turkey lengthwise in half, then strip the skin from each piece.",
+      "[title] Place fresh thyme, pork tenderloin and bay leaves on a large table in a baking dish and cover with foil. [title] Press the excess moisture out of the bird using a pickle brush or kitchen towel and allow to cook for about a minute or 2, scraping often with a spatula."
+    ],
+    "label": 0
+  },
+  {
+    "context": "[header] How to cut stair stringers [title] Measure twice for your total rise and run and your individual rise and run. [step] Ensure your math and calculations are correct. [substeps] Your total rise is the vertical height from one story to the next.",
+    "endings": [
+      "The final rise, which can be measured across these floors, is the height from one story down to the next. That number, assuming you carry stairs often, will be expressed as a column divider for each floor.",
+      "Your total run is the lateral height from one story to the next. The rise is the volume of strides you take throughout a day.",
+      "Your individual rise is the vertical height of each step. Your total run is the horizontal distance between one story and the next.",
+      "In this case you will want to measure the vertical height for the first floor. Consult a carpenter's guide if you are unsure."
+    ],
+    "label": 2
+  },
+  {
+    "context": "An introduction comes onto the screen for a trailer about a martial arts movie. The trailer is then played showing several martial arts battles and other captions on the screen. the video",
+    "endings": [
+      "ends with an item being shown on the screen briefly.",
+      "ends with the closing captions and graphics shown on the screen.",
+      "returns to the crowd clapping.",
+      "ends with the closing credits shown at the end."
+    ],
+    "label": 1
+  },
+  {
+    "context": "[header] How to explore and understand desire [title] First, find a place in which you can observe and explore your desires. [step] This is important as merely reading about the subject doesn't have as beneficial an effect as watching them as they unfold, and analyzing their effects. [title] You may practice mindfulness or meditation, or simply put your feet up and relax while watching the mind like an explorer.",
+    "endings": [
+      "[substeps] Set yourself clear guidelines for what you will be doing. It's important not to get to involved with the desire or dream.",
+      "[title] When you observe things as they unfold, your mind will realize the latent desire. [step] So when you observe the mind, give that name some weight.",
+      "[step] That way, you can see yourself doing this with no need to think about what will happen. It won't affect the thoughts you follow, just their outcomes.",
+      "[step] To practice mindfulness, simply lie by reading, even describing how a very small object slides off of a ceiling. Describe a point where it barely touches the floor (or, ,)."
+    ],
+    "label": 0
+  }
+]

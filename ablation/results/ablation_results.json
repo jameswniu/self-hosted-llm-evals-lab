@@ -1,0 +1,625 @@
+{
+  "template_baseline": {
+    "accuracy": 0.6,
+    "correct": 12,
+    "total": 20,
+    "examples": [
+      {
+        "context": "Several food items and dishes are laid out on a table. Meat product and other items are used to crea",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "The correct answer is B. is used to create an image in the sandwich.\n\nThe passage describes a process of creating a sandwich and then using a bento shaper, which is a tool used to create designs or im"
+      },
+      {
+        "context": "A man in a black vest is standing in a room. He throws darts at a dart board on the wall. a woman",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "The correct answer is A. stands next to him watching.\n\nThis is because the passage describes a scene where a man is throwing darts at a dart board on the wall, and it is likely that a woman is watchin"
+      },
+      {
+        "context": "[header] How to make money by having a house party [title] Find a couple friends to help plan the pa",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "The correct answer is:\n\nB. This will make things a lot easier on you. Consider the following : [substeps] Who has what responsibilities.\n\nThis option best completes the passage because it continues th"
+      },
+      {
+        "context": "[header] How to trim trees [title] Wear safety goggles, helmet, and purchase a step ladder. [step] S",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "The correct answer is B. However, if the branch is located high in the air and requires an extension ladder, consult a professional instead of trying to do it yourself. [substeps] Purchase this equipm"
+      },
+      {
+        "context": "The man working in the salon cuts off the woman's long hair and puts it in a bag. the man",
+        "label": 2,
+        "predicted": 1,
+        "correct": false,
+        "response": "The correct answer is B. wraps the bag in tissue paper and presents it to the representing.\n\nThis option makes sense in the context of a hair salon, where the stylist would typically package the cut h"
+      },
+      {
+        "context": "She inserts a tool into the vacuum and vacuums along the baseboards. She uses a special tool of the ",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "The correct answer is A. uses another tool of the vacuum to vacuum around windows.\n\nThe passage describes a person using a vacuum cleaner to clean various areas of a room, including the baseboards, ar"
+      },
+      {
+        "context": "A young boy is wearing a bandana and mowing a large yard. he",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "The correct answer is A. is unrelieved by the weeds and is barely smiling.\n\nThis option best completes the passage because it describes a scene where a young boy is mowing a large yard, wearing a band"
+      },
+      {
+        "context": "[header] How to increase revenue in beauty salon [title] Call your merchant services provider or loo",
+        "label": 3,
+        "predicted": 3,
+        "correct": true,
+        "response": "The correct answer is D. [title] Start collecting client information such as name, address, email address. [step] Let them know that this information is for your eyes only and this information will be"
+      },
+      {
+        "context": "Two teams plays volley ball in an indoor gym surrounded by referees, marketing graphics and an audie",
+        "label": 0,
+        "predicted": 1,
+        "correct": false,
+        "response": "The correct answer is:\n\nB. of young men run and shoot at a brown ball.\n\nThis option best completes the passage because it describes a scene of two teams playing volleyball, which is a sport that invol"
+      },
+      {
+        "context": "[header] How to get discounts on amazon [title] Choose the products you want to peruse by the level ",
+        "label": 3,
+        "predicted": 2,
+        "correct": false,
+        "response": "The correct answer is:\n\nC. Click on the \"discounts\" tab located in the left column. If you didn't open the discount tab, click on the \"store\" tab located in the right column.\n\nThis option is the most "
+      },
+      {
+        "context": "[header] How to recover from zika [title] Stay hydrated. [step] As you recover from zika, make sure ",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "The correct answer is B. Drink at least the minimum amount of water each day (8 cups of water per day is recommended as the minimum), if not more. [substeps] Drinking non-caffeinated tea and/or electr"
+      },
+      {
+        "context": "The person uses the paint brush to apply the mixture to the white, cake fish laying on the paper. th",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "The correct answer is B. adds powder and additional water to a small, plastic container.\n\nThe passage describes a person using a paint brush to apply a mixture to a white, cake fish laying on paper, w"
+      },
+      {
+        "context": "The woman is petting her dog, and the dog licked her face. The woman is playing with her dog. the wo",
+        "label": 2,
+        "predicted": 2,
+        "correct": true,
+        "response": "The correct answer is C. walked with her black dog and then pet him.\n\nThe passage describes the woman petting her dog and the dog licking her face, which suggests that the woman is interacting with he"
+      },
+      {
+        "context": "One of the men in purple rides through a skate board park wearing the padded suit. another man in gr",
+        "label": 3,
+        "predicted": 2,
+        "correct": false,
+        "response": "The correct answer is:\n\nD. rides a skateboard on the half pipe ramp and does tricks.\n\nThis answer choice best completes the passage because it describes the action of the man in purple wearing a padde"
+      },
+      {
+        "context": "A large, gray, plug in curler set is shown and it has different sized curlers in 4 different colors ",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "The correct answer is A. is now in a sped up mode and is rolling her hair in the curlers, fastens them on her head with the clips and does this all the way until her head is filled with curlers.\n\nThis"
+      }
+    ]
+  },
+  "template_cot": {
+    "accuracy": 0.35,
+    "correct": 7,
+    "total": 20,
+    "examples": [
+      {
+        "context": "Several food items and dishes are laid out on a table. Meat product and other items are used to crea",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "Let's analyze each option:\n\nA. \"is put into a skillet on the stove.\" - This option implies cooking the sandwich, but the passage doesn't mention cooking. It mentions creating a sandwich and then using"
+      },
+      {
+        "context": "A man in a black vest is standing in a room. He throws darts at a dart board on the wall. a woman",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "Let's analyze each option:\n\nA. stands next to him watching. - This is a plausible continuation, as it's common for someone to watch someone else play a game like darts.\n\nB. puts her arm down. - This o"
+      },
+      {
+        "context": "[header] How to make money by having a house party [title] Find a couple friends to help plan the pa",
+        "label": 1,
+        "predicted": 3,
+        "correct": false,
+        "response": "After considering each option, I think the most logical continuation is:\n\nD. They will help you plan where the party will occur and get you started. [substeps] Have everyone outside that circle of fri"
+      },
+      {
+        "context": "[header] How to trim trees [title] Wear safety goggles, helmet, and purchase a step ladder. [step] S",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "Let's evaluate each option:\n\nA. This option introduces a new concept (mitten stakes) that doesn't logically follow the initial steps of wearing safety goggles, helmet, and using a step ladder. Mitten "
+      },
+      {
+        "context": "The man working in the salon cuts off the woman's long hair and puts it in a bag. the man",
+        "label": 2,
+        "predicted": 0,
+        "correct": false,
+        "response": "Let's evaluate each option:\n\nA. \"then visits with several rolling rollers and styles the long hair.\" This option doesn't make sense because the man has already cut off the woman's long hair and put it"
+      },
+      {
+        "context": "She inserts a tool into the vacuum and vacuums along the baseboards. She uses a special tool of the ",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "Let's analyze each option:\n\nA. Using another tool of the vacuum to vacuum around windows doesn't logically follow the context, which is about cleaning the baseboards, sofa, and stair carpet.\n\nB. Foldi"
+      },
+      {
+        "context": "A young boy is wearing a bandana and mowing a large yard. he",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "Let's evaluate each option:\n\nA. \"is unrelieved by the weeds and is barely smiling.\" This option suggests that the boy is unhappy or stressed about the weeds, which doesn't necessarily follow from the "
+      },
+      {
+        "context": "[header] How to increase revenue in beauty salon [title] Call your merchant services provider or loo",
+        "label": 3,
+        "predicted": 2,
+        "correct": false,
+        "response": "After analyzing each option, I think the most logical continuation is:\n\nD. [title] Start collecting client information such as name, address, email address. [step] Let them know that this information "
+      },
+      {
+        "context": "Two teams plays volley ball in an indoor gym surrounded by referees, marketing graphics and an audie",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "Let's evaluate each option:\n\nA. Option A: This option introduces a sudden and unrelated change (the marketing signs morphing) that doesn't logically follow the initial description of the two teams pla"
+      },
+      {
+        "context": "[header] How to get discounts on amazon [title] Choose the products you want to peruse by the level ",
+        "label": 3,
+        "predicted": 2,
+        "correct": false,
+        "response": "After analyzing each option, I think the most logical continuation is:\n\nC. Click on the \"discounts\" tab located in the left column. If you didn't open the discount tab, click on the \"store\" tab locate"
+      },
+      {
+        "context": "[header] How to recover from zika [title] Stay hydrated. [step] As you recover from zika, make sure ",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "Let's evaluate each option:\n\nA. This option suggests avoiding refined, sugary drinks, which is a good advice, but it doesn't directly address the issue of dehydration caused by zika. It's a bit off-to"
+      },
+      {
+        "context": "The person uses the paint brush to apply the mixture to the white, cake fish laying on the paper. th",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "Let's analyze each option:\n\nA. This option doesn't make sense because the passage mentions applying a mixture to a cake fish, not scraping a fish to create a sauce.\n\nB. This option is a plausible cont"
+      },
+      {
+        "context": "The woman is petting her dog, and the dog licked her face. The woman is playing with her dog. the wo",
+        "label": 2,
+        "predicted": 0,
+        "correct": false,
+        "response": "Let's evaluate each option:\n\nA. Holds the dog's hand and frets through his hair. This option doesn't make sense in the context of the passage. The woman is petting her dog, not trying to interact with"
+      },
+      {
+        "context": "One of the men in purple rides through a skate board park wearing the padded suit. another man in gr",
+        "label": 3,
+        "predicted": 0,
+        "correct": false,
+        "response": "Let's analyze each option:\n\nA. rides past the blue man riding the bike. - This option doesn't make sense because the passage doesn't mention a blue man riding a bike.\n\nB. rides on a skateboard and fal"
+      },
+      {
+        "context": "A large, gray, plug in curler set is shown and it has different sized curlers in 4 different colors ",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "Let's analyze each option:\n\nA. This option is a plausible continuation, as the woman is shown picking up curlers and clips, which suggests she's getting ready to use them to style her hair.\n\nB. This o"
+      }
+    ]
+  },
+  "template_instruction": {
+    "accuracy": 0.55,
+    "correct": 11,
+    "total": 20,
+    "examples": [
+      {
+        "context": "Several food items and dishes are laid out on a table. Meat product and other items are used to crea",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "Based on the passage, the most logical continuation is:\n\nA. is put into a skillet on the stove.\n\nThe passage mentions that a meat product and other items are used to create a sandwich, and then a bent"
+      },
+      {
+        "context": "A man in a black vest is standing in a room. He throws darts at a dart board on the wall. a woman",
+        "label": 0,
+        "predicted": 1,
+        "correct": false,
+        "response": "The most logical continuation is:\n\nA. stands next to him watching.\n\nThis option is the most logical because it is a common scenario in a dart-throwing situation, where a person (in this case, the woma"
+      },
+      {
+        "context": "[header] How to make money by having a house party [title] Find a couple friends to help plan the pa",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "The correct answer is A.\n\nThe passage suggests that the first step in planning a house party is to find a couple of friends to help plan the party. If there are no friends available to help, the next "
+      },
+      {
+        "context": "[header] How to trim trees [title] Wear safety goggles, helmet, and purchase a step ladder. [step] S",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "The correct answer is B.\n\nThe passage emphasizes the importance of safety precautions when trimming trees, and option B is a logical continuation of this theme. It suggests that if the branch is locat"
+      },
+      {
+        "context": "The man working in the salon cuts off the woman's long hair and puts it in a bag. the man",
+        "label": 2,
+        "predicted": 0,
+        "correct": false,
+        "response": "The correct answer is A.\n\nThe passage states that the man cuts off the woman's long hair and puts it in a bag. This implies that the man is a hairstylist, and the woman is getting a haircut. The most "
+      },
+      {
+        "context": "She inserts a tool into the vacuum and vacuums along the baseboards. She uses a special tool of the ",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "The most logical continuation is:\n\nA. uses another tool of the vacuum to vacuum around windows.\n\nThis option is the most logical because the passage describes the person using special tools of the vac"
+      },
+      {
+        "context": "A young boy is wearing a bandana and mowing a large yard. he",
+        "label": 1,
+        "predicted": 2,
+        "correct": false,
+        "response": "Based on the passage, the most logical continuation is:\n\nA. is unrelieved by the weeds and is barely smiling.\n\nThis option is the most logical because it implies that the boy is focused on mowing the "
+      },
+      {
+        "context": "[header] How to increase revenue in beauty salon [title] Call your merchant services provider or loo",
+        "label": 3,
+        "predicted": 3,
+        "correct": true,
+        "response": "The correct answer is D.\n\nThe passage discusses ways to increase revenue in a beauty salon, specifically mentioning custom-designed gift cards and designating an area for client information. The logic"
+      },
+      {
+        "context": "Two teams plays volley ball in an indoor gym surrounded by referees, marketing graphics and an audie",
+        "label": 0,
+        "predicted": 1,
+        "correct": false,
+        "response": "The correct answer is B.\n\nThe passage describes a scene where two teams are playing volleyball in an indoor gym, surrounded by referees, marketing graphics, and an audience in bleachers. The descripti"
+      },
+      {
+        "context": "[header] How to get discounts on amazon [title] Choose the products you want to peruse by the level ",
+        "label": 3,
+        "predicted": 2,
+        "correct": false,
+        "response": "The correct answer is C.\n\nThe passage instructs the reader to navigate to a new window where all the products offered are 50 or 90 percent off, and then it provides a link to cheapsally.com to find cu"
+      },
+      {
+        "context": "[header] How to recover from zika [title] Stay hydrated. [step] As you recover from zika, make sure ",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "The correct answer is B.\n\nHere's why:\n\n* The passage emphasizes the importance of staying hydrated while recovering from zika, which is a common-sense approach to managing dehydration.\n* Option B prov"
+      },
+      {
+        "context": "The person uses the paint brush to apply the mixture to the white, cake fish laying on the paper. th",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "Based on the passage, the most logical continuation is:\n\nA. scrape the white white fish on the paper with the brush to create a sauce.\n\nThe passage mentions that the person is applying a mixture to a "
+      },
+      {
+        "context": "The woman is petting her dog, and the dog licked her face. The woman is playing with her dog. the wo",
+        "label": 2,
+        "predicted": 0,
+        "correct": false,
+        "response": "Based on the passage, the most logical continuation is:\n\nA. holds the dog's hand and frites through his hair.\n\nThe passage describes the woman petting her dog and the dog licking her face, indicating "
+      },
+      {
+        "context": "One of the men in purple rides through a skate board park wearing the padded suit. another man in gr",
+        "label": 3,
+        "predicted": 3,
+        "correct": true,
+        "response": "The correct answer is D. rides a skateboard on the half pipe ramp and does tricks.\n\nThe passage implies that the man in purple is participating in activities at the skate park, and the fact that he is"
+      },
+      {
+        "context": "A large, gray, plug in curler set is shown and it has different sized curlers in 4 different colors ",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "The most logical continuation of the passage is:\n\nA. is now in a sped up mode and is rolling her hair in the curlers, fastens them on her head with the clips and does this all the way until her head i"
+      }
+    ]
+  },
+  "template_fewshot_cot": {
+    "accuracy": 0.55,
+    "correct": 11,
+    "total": 20,
+    "examples": [
+      {
+        "context": "Several food items and dishes are laid out on a table. Meat product and other items are used to crea",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "Based on the context, it appears that the bento shaper is being used to create a sandwich. The most logical continuation is that the sandwich is being assembled and shaped using the bento shaper.\n\nAns"
+      },
+      {
+        "context": "A man in a black vest is standing in a room. He throws darts at a dart board on the wall. a woman",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "The context describes a man throwing darts at a dart board, which is a common activity in a pub or game room. The logical continuation involves someone else being present to watch or participate in th"
+      },
+      {
+        "context": "[header] How to make money by having a house party [title] Find a couple friends to help plan the pa",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "The passage is about planning a house party with the help of friends. The logical continuation involves discussing the responsibilities and roles of each person involved in the planning process.\n\nAnsw"
+      },
+      {
+        "context": "[header] How to trim trees [title] Wear safety goggles, helmet, and purchase a step ladder. [step] S",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "The passage is about trimming trees, and it emphasizes the importance of safety precautions. The logical continuation involves providing additional safety tips or guidelines for tree trimming.\n\nA is n"
+      },
+      {
+        "context": "The man working in the salon cuts off the woman's long hair and puts it in a bag. the man",
+        "label": 2,
+        "predicted": 0,
+        "correct": false,
+        "response": "The context describes cutting off the woman's long hair, so the logical continuation involves styling or processing the cut hair.\n\nAnswer: A"
+      },
+      {
+        "context": "She inserts a tool into the vacuum and vacuums along the baseboards. She uses a special tool of the ",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "response": "The context describes using the vacuum to clean specific areas, such as baseboards, around the sofa, and stair carpet. The logical continuation involves using the vacuum to clean other areas that are "
+      },
+      {
+        "context": "A young boy is wearing a bandana and mowing a large yard. he",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "Based on the passage, the most logical continuation involves the boy mowing the yard, which suggests that he is engaged in a task that requires effort and attention. The presence of a bandana, which i"
+      },
+      {
+        "context": "[header] How to increase revenue in beauty salon [title] Call your merchant services provider or loo",
+        "label": 3,
+        "predicted": 0,
+        "correct": false,
+        "response": "The passage is about increasing revenue in a beauty salon, and the current step is about customizing gift cards. The logical continuation would be to discuss how to use or promote these gift cards to "
+      },
+      {
+        "context": "Two teams plays volley ball in an indoor gym surrounded by referees, marketing graphics and an audie",
+        "label": 0,
+        "predicted": 1,
+        "correct": false,
+        "response": "The context describes a typical indoor volleyball game, with referees, marketing graphics, and an audience. The most logical continuation involves the game itself, specifically the action of playing t"
+      },
+      {
+        "context": "[header] How to get discounts on amazon [title] Choose the products you want to peruse by the level ",
+        "label": 3,
+        "predicted": 2,
+        "correct": false,
+        "response": "The passage is about getting discounts on Amazon, and the steps provided are about navigating to a specific page on tjshome.com to find discounted products. The logical continuation would be to follow"
+      },
+      {
+        "context": "[header] How to recover from zika [title] Stay hydrated. [step] As you recover from zika, make sure ",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "response": "The passage is about staying hydrated while recovering from zika, which implies that the goal is to drink enough fluids to prevent dehydration. The most logical continuation is to provide specific gui"
+      },
+      {
+        "context": "The person uses the paint brush to apply the mixture to the white, cake fish laying on the paper. th",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "response": "Based on the passage, it appears that the person is engaged in a creative activity, likely painting or decorating. The mention of a mixture and a paint brush suggests that the person is applying a sub"
+      },
+      {
+        "context": "The woman is petting her dog, and the dog licked her face. The woman is playing with her dog. the wo",
+        "label": 2,
+        "predicted": 0,
+        "correct": false,
+        "response": "Based on the passage, it seems that the woman is interacting with her dog in a playful and affectionate manner. The fact that the dog licked her face suggests that the woman is enjoying the interactio"
+      },
+      {
+        "context": "One of the men in purple rides through a skate board park wearing the padded suit. another man in gr",
+        "label": 3,
+        "predicted": 3,
+        "correct": true,
+        "response": "Based on the passage, it appears that the scene is set in a skate park, and one of the men is wearing a padded suit, which is likely a protective gear for skateboarding. The other man is wearing a gre"
+      },
+      {
+        "context": "A large, gray, plug in curler set is shown and it has different sized curlers in 4 different colors ",
+        "label": 0,
+        "predicted": 2,
+        "correct": false,
+        "response": "The context describes the woman showing the curler set and its components, so the logical continuation involves demonstrating the product's features or using it for its intended purpose.\n\nAnswer: C"
+      }
+    ]
+  },
+  "self_consistency_k5": {
+    "accuracy": 0.7,
+    "correct": 14,
+    "total": 20,
+    "base_template": "baseline",
+    "examples": [
+      {
+        "context": "Several food items and dishes are laid out on a table. Meat product and other items are used to crea",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "confidence": 0.8,
+        "votes": {
+          "1": 4,
+          "3": 1
+        }
+      },
+      {
+        "context": "A man in a black vest is standing in a room. He throws darts at a dart board on the wall. a woman",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "confidence": 0.6,
+        "votes": {
+          "0": 3,
+          "2": 2
+        }
+      },
+      {
+        "context": "[header] How to make money by having a house party [title] Find a couple friends to help plan the pa",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "confidence": 0.6,
+        "votes": {
+          "1": 3,
+          "3": 1,
+          "0": 1
+        }
+      },
+      {
+        "context": "[header] How to trim trees [title] Wear safety goggles, helmet, and purchase a step ladder. [step] S",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "confidence": 0.8,
+        "votes": {
+          "1": 4,
+          "3": 1
+        }
+      },
+      {
+        "context": "The man working in the salon cuts off the woman's long hair and puts it in a bag. the man",
+        "label": 2,
+        "predicted": 1,
+        "correct": false,
+        "confidence": 0.6,
+        "votes": {
+          "3": 1,
+          "1": 3,
+          "2": 1
+        }
+      },
+      {
+        "context": "She inserts a tool into the vacuum and vacuums along the baseboards. She uses a special tool of the ",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "confidence": 0.8,
+        "votes": {
+          "0": 4,
+          "3": 1
+        }
+      },
+      {
+        "context": "A young boy is wearing a bandana and mowing a large yard. he",
+        "label": 1,
+        "predicted": 0,
+        "correct": false,
+        "confidence": 1.0,
+        "votes": {
+          "0": 5
+        }
+      },
+      {
+        "context": "[header] How to increase revenue in beauty salon [title] Call your merchant services provider or loo",
+        "label": 3,
+        "predicted": 3,
+        "correct": true,
+        "confidence": 0.8,
+        "votes": {
+          "0": 1,
+          "3": 4
+        }
+      },
+      {
+        "context": "Two teams plays volley ball in an indoor gym surrounded by referees, marketing graphics and an audie",
+        "label": 0,
+        "predicted": 1,
+        "correct": false,
+        "confidence": 0.8,
+        "votes": {
+          "1": 4,
+          "0": 1
+        }
+      },
+      {
+        "context": "[header] How to get discounts on amazon [title] Choose the products you want to peruse by the level ",
+        "label": 3,
+        "predicted": 2,
+        "correct": false,
+        "confidence": 0.6,
+        "votes": {
+          "2": 3,
+          "3": 1,
+          "0": 1
+        }
+      },
+      {
+        "context": "[header] How to recover from zika [title] Stay hydrated. [step] As you recover from zika, make sure ",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "confidence": 1.0,
+        "votes": {
+          "1": 5
+        }
+      },
+      {
+        "context": "The person uses the paint brush to apply the mixture to the white, cake fish laying on the paper. th",
+        "label": 1,
+        "predicted": 1,
+        "correct": true,
+        "confidence": 1.0,
+        "votes": {
+          "1": 5
+        }
+      },
+      {
+        "context": "The woman is petting her dog, and the dog licked her face. The woman is playing with her dog. the wo",
+        "label": 2,
+        "predicted": 2,
+        "correct": true,
+        "confidence": 0.8,
+        "votes": {
+          "2": 4,
+          "3": 1
+        }
+      },
+      {
+        "context": "One of the men in purple rides through a skate board park wearing the padded suit. another man in gr",
+        "label": 3,
+        "predicted": 1,
+        "correct": false,
+        "confidence": 0.4,
+        "votes": {
+          "0": 1,
+          "2": 1,
+          "1": 2,
+          "3": 1
+        }
+      },
+      {
+        "context": "A large, gray, plug in curler set is shown and it has different sized curlers in 4 different colors ",
+        "label": 0,
+        "predicted": 0,
+        "correct": true,
+        "confidence": 0.8,
+        "votes": {
+          "3": 1,
+          "0": 4
+        }
+      }
+    ]
+  }
+}

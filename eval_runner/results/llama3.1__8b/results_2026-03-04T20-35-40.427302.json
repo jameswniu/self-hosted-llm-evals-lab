@@ -1,0 +1,111 @@
+{
+  "results": {
+    "custom_bench": {
+      "alias": "custom_bench",
+      "exact_match,none": 0.15,
+      "exact_match_stderr,none": 0.08191780219091252
+    }
+  },
+  "group_subtasks": {
+    "custom_bench": []
+  },
+  "configs": {
+    "custom_bench": {
+      "task": "custom_bench",
+      "dataset_path": "json",
+      "dataset_kwargs": {
+        "data_files": {
+          "validation": "eval_runner/custom_task/custom_bench.jsonl"
+        }
+      },
+      "validation_split": "validation",
+      "doc_to_text": "{{question}}\nAnswer:",
+      "doc_to_target": "{{answer}}",
+      "unsafe_code": false,
+      "description": "",
+      "target_delimiter": " ",
+      "fewshot_delimiter": "\n\n",
+      "num_fewshot": 0,
+      "metric_list": [
+        {
+          "metric": "exact_match",
+          "aggregation": "mean",
+          "higher_is_better": true
+        }
+      ],
+      "output_type": "generate_until",
+      "generation_kwargs": {
+        "until": [
+          "\n",
+          "Question:"
+        ],
+        "max_gen_toks": 64,
+        "temperature": 0.0,
+        "do_sample": false
+      },
+      "repeats": 1,
+      "should_decontaminate": false,
+      "metadata": {
+        "version": 1.0,
+        "description": "Custom benchmark testing factual recall, reasoning, and instruction following across three categories. Designed to complement standard benchmarks with production-relevant evaluation scenarios.\n",
+        "model": "llama3.1:8b",
+        "base_url": "http://localhost:11434/v1/chat/completions",
+        "num_concurrent": 1,
+        "max_retries": 3,
+        "tokenized_requests": false
+      }
+    }
+  },
+  "versions": {
+    "custom_bench": 1.0
+  },
+  "n-shot": {
+    "custom_bench": 0
+  },
+  "higher_is_better": {
+    "custom_bench": {
+      "exact_match": true
+    }
+  },
+  "n-samples": {
+    "custom_bench": {
+      "original": 20,
+      "effective": 20
+    }
+  },
+  "config": {
+    "model": "local-chat-completions",
+    "model_args": "model=llama3.1:8b,base_url=http://localhost:11434/v1/chat/completions,num_concurrent=1,max_retries=3,tokenized_requests=False",
+    "batch_size": "1",
+    "batch_sizes": [],
+    "device": null,
+    "use_cache": null,
+    "limit": 100.0,
+    "bootstrap_iters": 100000,
+    "gen_kwargs": null,
+    "random_seed": 42,
+    "numpy_seed": 42,
+    "torch_seed": 42,
+    "fewshot_seed": 42
+  },
+  "git_hash": "5f8281f",
+  "date": 1772685325.0600162,
+  "pretty_env_info": "PyTorch version: 2.8.0\nIs debug build: False\nCUDA used to build PyTorch: None\nROCM used to build PyTorch: N/A\n\nOS: macOS 26.3 (arm64)\nGCC version: Could not collect\nClang version: 17.0.0 (clang-1700.6.3.2)\nCMake version: Could not collect\nLibc version: N/A\n\nPython version: 3.9.6 (default, Dec  2 2025, 07:27:58)  [Clang 17.0.0 (clang-1700.6.3.2)] (64-bit runtime)\nPython platform: macOS-26.3-arm64-arm-64bit\nIs CUDA available: False\nCUDA runtime version: No CUDA\nCUDA_MODULE_LOADING set to: N/A\nGPU models and configuration: No CUDA\nNvidia driver version: No CUDA\ncuDNN version: No CUDA\nHIP runtime version: N/A\nMIOpen runtime version: N/A\nIs XNNPACK available: True\n\nCPU:\nApple M4 Max\n\nVersions of relevant libraries:\n[pip3] numpy==2.0.2\n[pip3] torch==2.8.0\n[conda] Could not collect",
+  "transformers_version": "4.57.6",
+  "lm_eval_version": "0.4.9.1",
+  "upper_git_hash": null,
+  "task_hashes": {
+    "custom_bench": "e4f37eb41f0c128254735649f356fc7df49f3e3110c7bf203980c32a60ee94d0"
+  },
+  "model_source": "local-chat-completions",
+  "model_name": "llama3.1:8b",
+  "model_name_sanitized": "llama3.1__8b",
+  "system_instruction": null,
+  "system_instruction_sha": null,
+  "fewshot_as_multiturn": false,
+  "chat_template": "",
+  "chat_template_sha": null,
+  "start_time": 7.794606875,
+  "end_time": 29.921061333,
+  "total_evaluation_time_seconds": "22.126454458"
+}

@@ -1,0 +1,28 @@
+{
+  "greedy": {
+    "temperature": 0,
+    "top_p": 1,
+    "top_k": 1,
+    "seed": 42
+  },
+  "low_temp": {
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "top_k": 40,
+    "seed": 42
+  },
+  "self_consistency_k5": {
+    "temperature": 0.7,
+    "top_p": 0.95,
+    "top_k": 40,
+    "seed": null,
+    "k": 5
+  },
+  "self_consistency_k10": {
+    "temperature": 0.7,
+    "top_p": 0.95,
+    "top_k": 40,
+    "seed": null,
+    "k": 10
+  }
+}

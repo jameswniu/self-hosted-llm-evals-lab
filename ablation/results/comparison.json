@@ -1,0 +1,30 @@
+{
+  "model": "llama3.1:8b",
+  "seed": 42,
+  "n_examples": 20,
+  "baseline": {
+    "accuracy": 0.6,
+    "ci_95": [
+      0.38658150076225317,
+      0.7811934676271829
+    ]
+  },
+  "improved": {
+    "accuracy": 0.5,
+    "ci_95": [
+      0.29929800819821234,
+      0.7007019918017876
+    ],
+    "template": "fewshot_cot",
+    "self_consistency": true
+  },
+  "lift": -0.09999999999999998,
+  "statistical_test": {
+    "test": "mcnemar",
+    "chi2": 0.125,
+    "p_value": 0.7236736098317629,
+    "significant": "False",
+    "improved_only": 3,
+    "regressed_only": 5
+  }
+}

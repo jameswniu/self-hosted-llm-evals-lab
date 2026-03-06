@@ -1,0 +1,27 @@
+task: custom_bench
+dataset_path: json
+dataset_name: null
+dataset_kwargs:
+  data_files:
+    validation: eval_runner/custom_task/custom_bench.jsonl
+output_type: generate_until
+validation_split: validation
+doc_to_text: "{{question}}\nAnswer:"
+doc_to_target: "{{answer}}"
+generation_kwargs:
+  until:
+    - "\n"
+    - "Question:"
+  max_gen_toks: 64
+  temperature: 0
+  do_sample: false
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+metadata:
+  version: 1.0
+  description: >
+    Custom benchmark testing factual recall, reasoning, and instruction
+    following across three categories. Designed to complement standard
+    benchmarks with production-relevant evaluation scenarios.

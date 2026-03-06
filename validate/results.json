@@ -1,0 +1,121 @@
+{
+  "model": "llama3.1:8b",
+  "seed": 42,
+  "determinism": {
+    "prompts_tested": 5,
+    "all_consistent": true,
+    "details": {
+      "What is the capital of France? Answer in one word.": {
+        "consistent": true,
+        "unique_count": 1,
+        "trials": 5,
+        "most_common": [
+          "Paris.",
+          5
+        ]
+      },
+      "What is 7 * 8? Answer with just the number.": {
+        "consistent": true,
+        "unique_count": 1,
+        "trials": 5,
+        "most_common": [
+          "56",
+          5
+        ]
+      },
+      "List the first 5 prime numbers separated by commas": {
+        "consistent": true,
+        "unique_count": 1,
+        "trials": 5,
+        "most_common": [
+          "2, 3, 5, 7, 11",
+          5
+        ]
+      },
+      "Is water wet? Answer yes or no.": {
+        "consistent": true,
+        "unique_count": 1,
+        "trials": 5,
+        "most_common": [
+          "No.",
+          5
+        ]
+      },
+      "What programming language was created by Guido van": {
+        "consistent": true,
+        "unique_count": 1,
+        "trials": 5,
+        "most_common": [
+          "Guido van Rossum created the programming language Python.",
+          5
+        ]
+      }
+    }
+  },
+  "validation": {
+    "total": 5,
+    "passed": 5,
+    "details": [
+      {
+        "prompt": "What is 15 * 23? Answer with just the number.",
+        "response": "345",
+        "validation": {
+          "valid": true,
+          "extracted": "345",
+          "rule": "numeric_answer",
+          "raw": "345"
+        },
+        "passed": true
+      },
+      {
+        "prompt": "What is the capital of Japan? Answer in one word.",
+        "response": "Tokyo",
+        "validation": {
+          "valid": true,
+          "word_count": 1,
+          "rule": "max_5_words",
+          "raw": "Tokyo"
+        },
+        "passed": true
+      },
+      {
+        "prompt": "Classify this sentiment as positive, negative, or neutral: \"I love this product!\"",
+        "response": "This sentiment is clearly **positive**. The use of the word \"love\" indicates a strong enthusiasm and affection for the product.",
+        "validation": {
+          "valid": true,
+          "extracted": "this sentiment is clearly **positive**. the use of",
+          "allowed": [
+            "positive",
+            "negative",
+            "neutral"
+          ],
+          "rule": "classification_label"
+        },
+        "passed": true
+      },
+      {
+        "prompt": "What is the chemical symbol for gold? Answer with just the symbol.",
+        "response": "Au",
+        "validation": {
+          "valid": true,
+          "word_count": 1,
+          "rule": "max_5_words",
+          "raw": "Au"
+        },
+        "passed": true
+      },
+      {
+        "prompt": "What is 100 divided by 4? Answer with just the number.",
+        "response": "25",
+        "validation": {
+          "valid": true,
+          "extracted": "25",
+          "rule": "numeric_answer",
+          "raw": "25"
+        },
+        "passed": true
+      }
+    ]
+  },
+  "timestamp": "2026-03-04T20:16:46"
+}

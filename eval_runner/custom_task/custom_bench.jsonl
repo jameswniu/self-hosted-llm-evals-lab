@@ -1,0 +1,20 @@
+{"question": "What is the chemical symbol for gold?", "answer": "Au", "category": "factual_recall"}
+{"question": "What planet is closest to the Sun?", "answer": "Mercury", "category": "factual_recall"}
+{"question": "What is the square root of 144?", "answer": "12", "category": "reasoning"}
+{"question": "If a shirt costs $25 and is 20% off, what is the sale price?", "answer": "$20", "category": "reasoning"}
+{"question": "What comes next in the sequence: 2, 4, 8, 16, ?", "answer": "32", "category": "reasoning"}
+{"question": "What is the capital of Japan?", "answer": "Tokyo", "category": "factual_recall"}
+{"question": "How many sides does a hexagon have?", "answer": "6", "category": "factual_recall"}
+{"question": "Convert 32 degrees Fahrenheit to Celsius.", "answer": "0", "category": "reasoning"}
+{"question": "What is the largest ocean on Earth?", "answer": "Pacific", "category": "factual_recall"}
+{"question": "If you have 3 apples and someone gives you 5 more, how many do you have?", "answer": "8", "category": "reasoning"}
+{"question": "What gas do plants absorb from the atmosphere?", "answer": "Carbon dioxide", "category": "factual_recall"}
+{"question": "What year did World War II end?", "answer": "1945", "category": "factual_recall"}
+{"question": "What is 15% of 200?", "answer": "30", "category": "reasoning"}
+{"question": "Name the process by which plants make food using sunlight.", "answer": "Photosynthesis", "category": "factual_recall"}
+{"question": "How many continents are there on Earth?", "answer": "7", "category": "factual_recall"}
+{"question": "What is the boiling point of water in Celsius?", "answer": "100", "category": "factual_recall"}
+{"question": "If a rectangle has length 8 and width 3, what is its area?", "answer": "24", "category": "reasoning"}
+{"question": "What element does O represent on the periodic table?", "answer": "Oxygen", "category": "factual_recall"}
+{"question": "A train leaves at 2:00 PM and arrives at 5:30 PM. How long is the journey in hours?", "answer": "3.5", "category": "reasoning"}
+{"question": "What is the speed of light in km/s, rounded to the nearest thousand?", "answer": "300000", "category": "factual_recall"}
