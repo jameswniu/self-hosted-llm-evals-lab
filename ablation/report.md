@@ -11,7 +11,7 @@
 
 | Configuration | Accuracy | 95% CI | Lift |
 |---|---|---|---|
-| Baseline (default template) | 0.60 (12/20) | [0.39, 0.78] | -- |
+| Baseline (default template) | 0.60 (12/20) | [0.39, 0.78] | – |
 | Instruction template | 0.50 (10/20) | [0.30, 0.70] | -10pp |
 | Chain-of-thought | 0.35 (7/20) | [0.18, 0.57] | -25pp |
 | Few-shot + CoT | 0.55 (11/20) | [0.34, 0.74] | -5pp |
