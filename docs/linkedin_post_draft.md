@@ -4,7 +4,7 @@
 
 I told an 8B model to "think step by step" and its accuracy dropped by 25 percentage points.
 
-This is why you need evals before deploying. Most people self-host an open-source LLM, follow a few prompt engineering tips, and ship -- with no idea whether their model is accurate, whether their prompts help or hurt, or whether the endpoint can handle real traffic.
+This is why you need evals before deploying. Most people self-host an open-source LLM, follow a few prompt engineering tips, and ship — with no idea whether their model is accurate, whether their prompts help or hurt, or whether the endpoint can handle real traffic.
 
 I built an eval toolkit for self-hosted LLMs and ran a systematic ablation across 5 prompting strategies on Llama 3.1 8B:
 
@@ -26,7 +26,7 @@ The practical takeaway for anyone serving open-source models as APIs: eval befor
 
 Repo: [link]
 
-Built as an eval toolkit -- if you're self-hosting LLMs, you can use this to benchmark, eval, and optimize your setup out of the box.
+Built as an eval toolkit — if you're self-hosting LLMs, you can use this to benchmark, eval, and optimize your setup out of the box.
 
 #LLM #OpenSource #PromptEngineering #AIEngineering #MachineLearning #Evals
 
@@ -39,6 +39,6 @@ Some engineering details for the curious:
 - SHA-256 prompt caching: every (model, prompt, params) tuple is hashed and cached to disk, so ablation runs over the same data are instant and perfectly reproducible
 - Deterministic baselines: greedy decoding + fixed seed, verified identical across 5x5 trials before running any comparison
 - Load testing with streaming TTFT measurement, percentile latency (P50/P95/P99), throughput scaling under concurrency
-- Statistical rigor: McNemar's test for paired comparisons, Wilson score confidence intervals. The self-consistency gain isn't statistically significant at n=20 (p=0.48) -- need 200+ samples for 80% power
+- Statistical rigor: McNemar's test for paired comparisons, Wilson score confidence intervals. The self-consistency gain isn't statistically significant at n=20 (p=0.48) — need 200+ samples for 80% power
 
 Built with lm-eval-harness, Ollama, and Python. Works with any OpenAI-compatible endpoint.

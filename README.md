@@ -29,11 +29,11 @@ Works with [Ollama](https://ollama.com), or any OpenAI-compatible `/v1/chat/comp
 
 ## Use Cases
 
-- **"Is my model accurate enough?"** -- Run standardized benchmarks (MMLU, HellaSwag) on any model you're serving. Compare Llama vs Mistral vs Gemma on the same tasks.
-- **"Are my prompts actually helping?"** -- Test whether chain-of-thought, few-shot, or instruction prompts improve or hurt your specific model. (Spoiler: at 8B parameters, simpler prompts win.)
-- **"Can it handle production traffic?"** -- Load-test your endpoint with concurrent requests. Get P50/P95/P99 latency, TTFT, and throughput numbers before users hit it.
-- **"Why does it give different answers each time?"** -- Validate determinism with reproducibility checks. Pin down greedy decoding + fixed seed to get consistent outputs.
-- **"Which model should I deploy?"** -- Run the same eval suite across models and compare accuracy, latency, and throughput side-by-side.
+- **"Is my model accurate enough?"** — Run standardized benchmarks (MMLU, HellaSwag) on any model you're serving. Compare Llama vs Mistral vs Gemma on the same tasks.
+- **"Are my prompts actually helping?"** — Test whether chain-of-thought, few-shot, or instruction prompts improve or hurt your specific model. (Spoiler: at 8B parameters, simpler prompts win.)
+- **"Can it handle production traffic?"** — Load-test your endpoint with concurrent requests. Get P50/P95/P99 latency, TTFT, and throughput numbers before users hit it.
+- **"Why does it give different answers each time?"** — Validate determinism with reproducibility checks. Pin down greedy decoding + fixed seed to get consistent outputs.
+- **"Which model should I deploy?"** — Run the same eval suite across models and compare accuracy, latency, and throughput side-by-side.
 
 ## Quick Start
 
