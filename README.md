@@ -12,7 +12,7 @@ Eval, benchmark, and optimize open-source LLMs you self-host as APIs.
 You downloaded an open-source LLM. You're serving it with Ollama or vLLM. But you're flying blind:
 
 - You don't know how accurate it actually is on your tasks
-- Every "prompt engineering tip" you followed might be making things worse (we found CoT drops accuracy 25pp on small models)
+- Every "prompt engineering tip" you followed might be making things worse (we found CoT drops accuracy 25pp on Llama 3.1 8B Q4_0, HellaSwag n=20)
 - You have no idea if it can handle real traffic
 - You can't tell if outputs are even reproducible
 
@@ -25,7 +25,7 @@ This toolkit gives you answers before you ship to production.
 - **Validate determinism** (greedy decoding + fixed seed, verified across 5x5 trials)
 - **Optimize prompts** via systematic ablation (templates, CoT, few-shot, self-consistency voting)
 
-Works with [Ollama](https://ollama.com), or any OpenAI-compatible `/v1/chat/completions` endpoint.
+Works with [Ollama](https://ollama.com), or any OpenAI-compatible `/v1/chat/completions` endpoint. Evals run in generative mode (`--model local-chat-completions`), so no logprob support is needed from the backend.
 
 ## Use Cases
 
@@ -51,19 +51,30 @@ Override the model: `MODEL=mistral:7b make eval`
 ## Architecture
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b', 'edgeLabelBackground': '#ffffff', 'clusterBkg': '#ffffff'}, 'flowchart': {'curve': 'linear'}}}%%
+%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b', 'edgeLabelBackground': '#ffffff', 'clusterBkg': '#f8fafc', 'clusterBorder': '#94a3b8'}, 'flowchart': {'curve': 'linear'}}}%%
 flowchart TD
     classDef serving fill:#2D5FAF,stroke:#1A3D7A,color:#ffffff,stroke-width:2px
     classDef eval fill:#C44B3B,stroke:#8B2E22,color:#ffffff,stroke-width:2px
     classDef ops fill:#278F84,stroke:#1A6359,color:#ffffff,stroke-width:2px
     classDef cache fill:#7B52C7,stroke:#53348A,color:#ffffff,stroke-width:2px
 
-    OL(["Ollama<br/>llama3.1:8b Q4_0"]):::serving
-    BR["Benchmark Runner<br/>lm-eval-harness"]:::eval
-    AB["Ablation Engine<br/>optimize_prompt.py"]:::eval
-    LT["Load Tester<br/>ThreadPoolExecutor"]:::ops
-    DV["Determinism Validator<br/>5x5 matrix"]:::ops
-    PC[("SHA-256<br/>Prompt Cache")]:::cache
+    subgraph Serving["Serving Layer"]
+        OL(["Ollama<br/>llama3.1:8b Q4_0"]):::serving
+    end
+
+    subgraph EvalAblation["Eval & Ablation"]
+        BR["Benchmark Runner<br/>lm-eval-harness"]:::eval
+        AB["Ablation Engine<br/>optimize_prompt.py"]:::eval
+    end
+
+    subgraph OpsValidation["Ops & Validation"]
+        LT["Load Tester<br/>ThreadPoolExecutor"]:::ops
+        DV["Determinism Validator<br/>5x5 matrix"]:::ops
+    end
+
+    subgraph PromptCache["Prompt Cache"]
+        PC[("SHA-256<br/>Prompt Cache")]:::cache
+    end
 
     OL -->|"hellaswag, mmlu"| BR
     OL -->|"templates x decoding"| AB
@@ -75,7 +86,7 @@ flowchart TD
     DV -.->|"cache hit"| PC
 ```
 
-Every (model, prompt, params) call is SHA-256 hashed and cached to disk. Repeated evaluations hit the cache instead of the inference endpoint, which makes ablation runs efficient and results reproducible. Deterministic baselines (temperature=0, top_k=1, fixed seed) are enforced before any comparison.
+Every (model, prompt, params) call is hashed via `SHA-256(JSON.dumps({"model": m, "prompt": p, **params}, sort_keys=True))` and cached to `.cache/{hash}.json`. Repeated evaluations hit the cache instead of the inference endpoint, which makes ablation runs efficient and results reproducible. Deterministic baselines (temperature=0, top_k=1, fixed seed) are enforced before any comparison.
 
 ## Key Findings
 
@@ -102,45 +113,42 @@ Few-shot examples partially recovered CoT losses (35% to 55%) by constraining ou
 #### Ablation pipeline
 
 ```mermaid
-graph LR
+%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#94a3b8'}, 'flowchart': {'curve': 'linear'}}}%%
+flowchart LR
+    classDef phase1 fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
+    classDef phase2 fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
+    classDef stats fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
+
     subgraph Phase1["Phase 1: Template Selection"]
         direction TB
-        T1["baseline\n(complete the passage)"]
-        T2["instruction"]
-        T3["chain-of-thought"]
-        T4["few-shot + CoT"]
-        GD["Greedy decoding\ntemp=0, top_k=1, seed=42"]
+        T1["baseline<br/>(complete the passage)"]:::phase1
+        T2["instruction"]:::phase1
+        T3["chain-of-thought"]:::phase1
+        T4["few-shot + CoT"]:::phase1
+        GD["Greedy decoding<br/>temp=0, top_k=1, seed=42"]:::phase1
         T1 --> GD
         T2 --> GD
         T3 --> GD
         T4 --> GD
-        GD --> BEST["Best template\n(highest accuracy)"]
+        GD --> BEST["Best template<br/>(highest accuracy)"]:::phase1
     end
 
     subgraph Phase2["Phase 2: Self-Consistency"]
         direction TB
-        SC["k=5 samples\ntemp=0.7, top_p=0.95\ntop_k=40, seeds 42..46"]
-        MV["Majority vote\nconfidence = winner/k"]
+        SC["k=5 samples<br/>temp=0.7, top_p=0.95<br/>top_k=40, seeds 42..46"]:::phase2
+        MV["Majority vote<br/>confidence = winner/k"]:::phase2
         SC --> MV
     end
 
     subgraph Stats["Statistical Comparison"]
         direction TB
-        WCI["Wilson score CIs"]
-        MN["McNemar's test"]
+        WCI["Wilson score CIs"]:::stats
+        MN["McNemar's test"]:::stats
     end
 
     BEST --> SC
     MV --> WCI
     MV --> MN
-
-    classDef phase1 fill:#ffedd5,stroke:#ea580c,color:#7c2d12
-    classDef phase2 fill:#dcfce7,stroke:#16a34a,color:#14532d
-    classDef stats fill:#f3e8ff,stroke:#9333ea,color:#581c87
-
-    class T1,T2,T3,T4,GD,BEST phase1
-    class SC,MV phase2
-    class WCI,MN stats
 ```
 
 ### Self-consistency and confidence routing
@@ -148,46 +156,42 @@ graph LR
 Self-consistency (5 samples at temperature=0.7, majority vote) was the only strategy that improved accuracy: +10pp over baseline at 5x latency cost.
 
 ```mermaid
-graph LR
+%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#94a3b8'}, 'flowchart': {'curve': 'linear'}}}%%
+flowchart LR
+    classDef gen fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
+    classDef ext fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
+    classDef vote fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
+    classDef route fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
+
     subgraph Generate["Parallel Generation"]
-        P["Prompt"] --> G1["seed=42\ntemp=0.7\ntop_p=0.95\ntop_k=40"]
-        P --> G2["seed=43"]
-        P --> G3["seed=44"]
-        P --> G4["seed=45"]
-        P --> G5["seed=46"]
+        P["Prompt"]:::gen --> G1["seed=42<br/>temp=0.7<br/>top_p=0.95<br/>top_k=40"]:::gen
+        P --> G2["seed=43"]:::gen
+        P --> G3["seed=44"]:::gen
+        P --> G4["seed=45"]:::gen
+        P --> G5["seed=46"]:::gen
     end
 
     subgraph Extract["Answer Extraction"]
-        G1 --> E1["extract_answer()\n3-tier regex"]
-        G2 --> E2["extract_answer()"]
-        G3 --> E3["extract_answer()"]
-        G4 --> E4["extract_answer()"]
-        G5 --> E5["extract_answer()"]
+        G1 --> E1["extract_answer()<br/>3-tier regex"]:::ext
+        G2 --> E2["extract_answer()"]:::ext
+        G3 --> E3["extract_answer()"]:::ext
+        G4 --> E4["extract_answer()"]:::ext
+        G5 --> E5["extract_answer()"]:::ext
     end
 
     subgraph Vote["Majority Vote"]
-        E1 --> C["Counter()\nwinner, count"]
+        E1 --> C["Counter()<br/>winner, count"]:::vote
         E2 --> C
         E3 --> C
         E4 --> C
         E5 --> C
-        C --> CONF["confidence =\nwinner_count / k"]
+        C --> CONF["confidence =<br/>winner_count / k"]:::vote
     end
 
     subgraph Route["Confidence Routing"]
-        CONF -->|">= 0.8"| SERVE["Serve answer"]
-        CONF -->|"<= 0.6"| CASCADE["Cascade to\nlarger model"]
+        CONF -->|">= 0.8"| SERVE["Serve answer"]:::route
+        CONF -->|"<= 0.6"| CASCADE["Cascade to<br/>larger model"]:::route
     end
-
-    classDef gen fill:#dbeafe,stroke:#2563eb,color:#1e3a5f
-    classDef ext fill:#ffedd5,stroke:#ea580c,color:#7c2d12
-    classDef vote fill:#dcfce7,stroke:#16a34a,color:#14532d
-    classDef route fill:#f3e8ff,stroke:#9333ea,color:#581c87
-
-    class P,G1,G2,G3,G4,G5 gen
-    class E1,E2,E3,E4,E5 ext
-    class C,CONF vote
-    class SERVE,CASCADE route
 ```
 
 Self-consistency config: `k=5, temperature=0.7, top_p=0.95, top_k=40, seeds=[42,43,44,45,46], max_tokens=128`.
@@ -213,26 +217,31 @@ This suggests a production routing strategy: run self-consistency on the small m
 TTFT measured via streaming first non-empty chunk. Throughput from Ollama's `eval_count / eval_duration`. First request excluded (cold-start model load).
 
 ```mermaid
-graph LR
+%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#94a3b8'}, 'flowchart': {'curve': 'linear'}}}%%
+flowchart LR
+    classDef client fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
+    classDef queue fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
+    classDef metrics fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
+
     subgraph Clients["ThreadPoolExecutor"]
-        C1["Thread 1\nprompt"]
-        C2["Thread 2\nprompt"]
-        C3["Thread 3\nprompt"]
+        C1["Thread 1<br/>prompt"]:::client
+        C2["Thread 2<br/>prompt"]:::client
+        C3["Thread 3<br/>prompt"]:::client
     end
 
     subgraph Queue["Ollama Request Queue"]
         direction TB
-        Q["Sequential processing\n(no batching)"]
-        Q --> R1["Request 1\nstreaming"]
-        Q --> R2["Request 2\nwaiting..."]
-        Q --> R3["Request 3\nwaiting..."]
+        Q["Sequential processing<br/>(no batching)"]:::queue
+        Q --> R1["Request 1<br/>streaming"]:::queue
+        Q --> R2["Request 2<br/>waiting..."]:::queue
+        Q --> R3["Request 3<br/>waiting..."]:::queue
     end
 
     subgraph Metrics["Metric Collection"]
         direction TB
-        TTFT["TTFT\nfirst non-empty chunk"]
-        TPS["tok/s\neval_count / eval_duration"]
-        AGG["numpy aggregation\nP50 / P95 / P99"]
+        TTFT["TTFT<br/>first non-empty chunk"]:::metrics
+        TPS["tok/s<br/>eval_count / eval_duration"]:::metrics
+        AGG["numpy aggregation<br/>P50 / P95 / P99"]:::metrics
         TTFT --> AGG
         TPS --> AGG
     end
@@ -242,14 +251,6 @@ graph LR
     C3 --> Q
     R1 --> TTFT
     R1 --> TPS
-
-    classDef client fill:#dbeafe,stroke:#2563eb,color:#1e3a5f
-    classDef queue fill:#ffedd5,stroke:#ea580c,color:#7c2d12
-    classDef metrics fill:#dcfce7,stroke:#16a34a,color:#14532d
-
-    class C1,C2,C3 client
-    class Q,R1,R2,R3 queue
-    class TTFT,TPS,AGG metrics
 ```
 
 TTFT scales linearly with concurrency because Ollama queues requests sequentially rather than batching. For scaling beyond single-GPU, continuous batching backends (vLLM, TGI) would be the next step.
@@ -258,10 +259,10 @@ TTFT scales linearly with concurrency because Ollama queues requests sequentiall
 
 ## Methodology
 
-- **Model**: Llama 3.1 8B (Q4_0 quantized) via Ollama
+- **Model**: Llama 3.1 8B (Q4_0 quantized, ~4.7 GB) via Ollama
 - **Decoding**: Greedy baseline (temperature=0, top_p=1, top_k=1, seed=42). Self-consistency uses temperature=0.7, top_p=0.95, k=5.
 - **Benchmark**: HellaSwag (commonsense completion), MMLU (knowledge), custom JSON task
-- **Ablation**: 5 prompting strategies tested on identical 20-item subset. Answer extraction via regex normalization ("A", "A.", "(A)", "The answer is A").
+- **Ablation**: 4 prompting strategies tested, then self-consistency on best template, on identical 20-item subset. Answer extraction via regex normalization ("A", "A.", "(A)", "The answer is A").
 - **Statistical tests**: McNemar's test for paired accuracy comparisons. Wilson score confidence intervals for proportions. p=0.48 on the self-consistency vs baseline comparison (not significant at n=20).
 
 <details>
@@ -323,9 +324,9 @@ Where b = items only baseline got right, c = items only improved got right. df=1
 
 ## Limitations & Future Work
 
-- **Sample size**: n=20 gives 30-40pp wide confidence intervals. Need 200+ examples for 80% power to detect a 10pp effect. The CoT drop is large enough to be directionally meaningful, but exact magnitudes are uncertain.
+- **Sample size**: n=20 gives 30-40pp wide confidence intervals (baseline 60%: Wilson CI [0.39, 0.78]). Need 200+ examples for 80% power to detect a 10pp effect. The CoT drop is large enough to be directionally meaningful, but exact magnitudes are uncertain.
 - **Single model size**: At what parameter count does CoT start helping? Testing 13B, 70B, and mixture-of-experts architectures would map the crossover point.
-- **Quantization**: All results are on Q4_0 quantized weights. Full-precision comparison would isolate whether quantization interacts with prompting strategy.
+- **Quantization**: All results are on Q4_0 quantized weights (4-bit, ~4.7 GB). Full-precision comparison would isolate whether quantization interacts with prompting strategy.
 - **Task coverage**: Ablation was HellaSwag only. CoT may perform differently on coding, math, or multi-step reasoning tasks where explicit reasoning is more structurally useful.
 - **Backend**: Ollama's sequential queuing limits concurrency insights. Benchmarking against vLLM or TGI with continuous batching would give a more realistic production performance profile.
 
