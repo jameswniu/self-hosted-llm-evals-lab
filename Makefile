@@ -1,4 +1,4 @@
-.PHONY: setup serve test-serve eval eval-custom perf validate ablation clean
+.PHONY: setup serve test-serve eval eval-custom perf validate ablation figures clean
 
 MODEL ?= llama3.1:8b
 BASE_URL ?= http://localhost:11434
@@ -66,6 +66,10 @@ ablation-eval:
 	bash ablation/eval.sh
 
 ablation: ablation-prepare ablation-optimize ablation-eval
+
+# ─── Figures ──────────────────────────────────────────────────────────
+figures:
+	. .venv/bin/activate && python docs/generate_figures.py
 
 # ─── Housekeeping ─────────────────────────────────────────────────────
 clean:

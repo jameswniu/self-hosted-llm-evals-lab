@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to llm-serving-lab.
+Thanks for your interest in contributing to self-hosted-llm-evals-lab.
 
 ## Getting Started
 

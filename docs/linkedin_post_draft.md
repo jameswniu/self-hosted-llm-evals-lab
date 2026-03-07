@@ -4,7 +4,9 @@
 
 I told an 8B model to "think step by step" and its accuracy dropped by 25 percentage points.
 
-I built a toolkit for benchmarking self-hosted LLMs and ran a systematic ablation across 5 prompting strategies on Llama 3.1 8B:
+This is why you need evals before deploying. Most people self-host an open-source LLM, follow a few prompt engineering tips, and ship -- with no idea whether their model is accurate, whether their prompts help or hurt, or whether the endpoint can handle real traffic.
+
+I built an eval toolkit for self-hosted LLMs and ran a systematic ablation across 5 prompting strategies on Llama 3.1 8B:
 
 | Strategy | Accuracy |
 |---|---|
@@ -20,13 +22,13 @@ The one thing that worked: self-consistency. Generate 5 answers at higher temper
 
 That confidence score is a practical routing signal. Trust high-confidence answers from the small model. Cascade low-confidence items to a larger one.
 
-The practical takeaway for anyone serving open-source models as APIs: benchmark before you prompt-engineer. Simpler prompts can outperform complex ones at small scale.
+The practical takeaway for anyone serving open-source models as APIs: eval before you prompt-engineer. Simpler prompts can outperform complex ones at small scale. And without running evals, you're just guessing.
 
 Repo: [link]
 
-Built as a toolkit -- if you're self-hosting LLMs, you can use this to benchmark and optimize your setup out of the box.
+Built as an eval toolkit -- if you're self-hosting LLMs, you can use this to benchmark, eval, and optimize your setup out of the box.
 
-#LLM #OpenSource #PromptEngineering #AIEngineering #MachineLearning
+#LLM #OpenSource #PromptEngineering #AIEngineering #MachineLearning #Evals
 
 ---
 
