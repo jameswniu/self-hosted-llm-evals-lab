@@ -109,17 +109,17 @@ Few-shot examples partially recovered CoT losses (35% to 55%) by constraining ou
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
-flowchart LR
+flowchart TD
     classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
     classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
     classDef purple fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
 
-    T["4 Templates<br/>baseline · instruction<br/>CoT · few-shot + CoT"]:::orange
-    GD["Greedy Decode<br/>temp=0, seed=42"]:::orange
-    BEST["Best Template"]:::orange
-    SC["Self-Consistency<br/>k=5, temp=0.7"]:::green
-    MV["Majority Vote<br/>confidence = winner / k"]:::green
-    STAT["Wilson CIs +<br/>McNemar's test"]:::purple
+    T["4 Templates: baseline · instruction · CoT · few-shot + CoT"]:::orange
+    GD["Greedy Decode — temp=0, seed=42"]:::orange
+    BEST["Best Template (highest accuracy)"]:::orange
+    SC["Self-Consistency — k=5, temp=0.7"]:::green
+    MV["Majority Vote — confidence = winner / k"]:::green
+    STAT["Wilson CIs + McNemar's test"]:::purple
 
     T --> GD --> BEST --> SC --> MV --> STAT
 ```
@@ -130,18 +130,18 @@ Self-consistency (5 samples at temperature=0.7, majority vote) was the only stra
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
-flowchart LR
+flowchart TD
     classDef blue fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
     classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
     classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
     classDef purple fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
 
     P["Prompt"]:::blue
-    GEN["Generate k=5 samples<br/>seeds 42-46, temp=0.7"]:::blue
-    EXT["Extract Answers<br/>3-tier regex"]:::orange
-    VOTE["Majority Vote<br/>confidence = winner / k"]:::green
+    GEN["Generate k=5 samples — seeds 42-46, temp=0.7"]:::blue
+    EXT["Extract Answers — 3-tier regex"]:::orange
+    VOTE["Majority Vote — confidence = winner / k"]:::green
     HIGH[/"conf >= 0.8 : serve"/]:::green
-    LOW[/"conf <= 0.6 : cascade<br/>to larger model"/]:::purple
+    LOW[/"conf <= 0.6 : cascade to larger model"/]:::purple
 
     P --> GEN --> EXT --> VOTE
     VOTE --> HIGH
@@ -172,7 +172,7 @@ TTFT measured via streaming first non-empty chunk. Throughput from Ollama's `eva
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
-flowchart LR
+flowchart TD
     classDef blue fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
     classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
     classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
@@ -183,12 +183,12 @@ flowchart LR
         C3["Thread 3"]:::blue
     end
 
-    Q["Ollama Queue<br/>sequential, no batching"]:::orange
+    Q["Ollama Queue — sequential, no batching"]:::orange
 
     subgraph metrics ["Metrics"]
-        TTFT["TTFT<br/>first non-empty chunk"]:::green
-        TPS["Throughput<br/>eval_count / eval_duration"]:::green
-        AGG["Aggregate<br/>P50 / P95 / P99"]:::green
+        TTFT["TTFT — first non-empty chunk"]:::green
+        TPS["Throughput — eval_count / eval_duration"]:::green
+        AGG["Aggregate — P50 / P95 / P99"]:::green
     end
 
     C1 --> Q
