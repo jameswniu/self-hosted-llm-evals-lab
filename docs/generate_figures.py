@@ -1,170 +1,189 @@
-"""Regenerate README charts with the darker Mermaid-aligned palette."""
+#!/usr/bin/env python3
+"""Generate figures referenced by README.md into docs/figures/."""
+
+import json
+import os
+import sys
 
 import matplotlib.pyplot as plt
-import matplotlib
 import numpy as np
-import os
+import pandas as pd
+import seaborn as sns
 
-matplotlib.rcParams.update({
-    "figure.facecolor": "white",
-    "axes.facecolor": "white",
-    "font.family": "sans-serif",
-    "font.size": 11,
-    "axes.edgecolor": "#333333",
-    "axes.labelcolor": "#333333",
-    "xtick.color": "#333333",
-    "ytick.color": "#333333",
-    "text.color": "#333333",
-})
-
-# Palette
-NAVY = "#2D5FAF"
-TERRA = "#C44B3B"
-TEAL = "#278F84"
-PURPLE = "#7B52C7"
-AMBER = "#C4890C"
-
-FIGURES_DIR = os.path.join(os.path.dirname(__file__), "figures")
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FIGURES_DIR = os.path.join(REPO_ROOT, "docs", "figures")
+ABLATION_PATH = os.path.join(REPO_ROOT, "ablation", "results", "ablation_results.json")
+METRICS_PATH = os.path.join(REPO_ROOT, "perf", "metrics.csv")
 
 
-def chart_accuracy():
+def wilson_ci(p, n, z=1.96):
+    """Wilson score 95% confidence interval for a proportion."""
+    denom = 1 + z**2 / n
+    centre = (p + z**2 / (2 * n)) / denom
+    spread = z * np.sqrt((p * (1 - p) + z**2 / (4 * n)) / n) / denom
+    return centre - spread, centre + spread
+
+
+# -- Figure 1: accuracy_by_strategy.png ----------------------------------------
+
+def fig_accuracy_by_strategy(data):
     strategies = [
-        "Baseline\n(minimal)",
-        "Instruction\ntemplate",
-        "Chain-of-\nthought",
-        "Few-shot\n+ CoT",
-        "Self-consistency\n(k=5)",
+        ("template_baseline", "Baseline"),
+        ("template_instruction", "Instruction"),
+        ("template_cot", "Chain-of-Thought"),
+        ("template_fewshot_cot", "Few-shot + CoT"),
+        ("self_consistency_k5", "Self-consistency k=5"),
     ]
-    values = [60, 50, 35, 55, 70]
-    colors = [NAVY, AMBER, TERRA, PURPLE, TEAL]
+    names = [s[1] for s in strategies]
+    accs = [data[s[0]]["accuracy"] for s in strategies]
+    n = 20
 
-    fig, ax = plt.subplots(figsize=(9, 5))
-    bars = ax.bar(strategies, values, color=colors, width=0.6, edgecolor="white", linewidth=0.5)
+    lo = [wilson_ci(a, n)[0] for a in accs]
+    hi = [wilson_ci(a, n)[1] for a in accs]
+    err_lo = [a - l for a, l in zip(accs, lo)]
+    err_hi = [h - a for a, h in zip(accs, hi)]
 
-    # Baseline dashed line
-    ax.axhline(60, color="gray", linestyle="--", linewidth=1, zorder=0)
+    best_idx = int(np.argmax(accs))
+    worst_idx = int(np.argmin(accs))
+    colors = []
+    for i in range(len(accs)):
+        if i == best_idx:
+            colors.append("#2ecc71")
+        elif i == worst_idx:
+            colors.append("#e74c3c")
+        else:
+            colors.append("#3498db")
 
-    # Bold percentage labels above bars
-    for bar, val in zip(bars, values):
-        ax.text(
-            bar.get_x() + bar.get_width() / 2,
-            val + 1.5,
-            f"{val}%",
-            ha="center", va="bottom", fontweight="bold", fontsize=12,
-        )
-
-    # Annotation arrow from baseline to CoT
-    ax.annotate(
-        "-25pp",
-        xy=(2, 35), xytext=(2, 55),
-        fontsize=11, fontweight="bold", color=TERRA,
-        ha="center",
-        arrowprops=dict(arrowstyle="->", color=TERRA, lw=2),
-    )
-
-    ax.set_ylabel("Accuracy (%)")
-    ax.set_ylim(0, 85)
-    ax.set_title("HellaSwag Accuracy by Prompting Strategy (Llama 3.1 8B)", fontweight="bold", fontsize=13)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    bars = ax.bar(names, accs, color=colors, edgecolor="white", linewidth=0.8)
+    ax.errorbar(names, accs, yerr=[err_lo, err_hi], fmt="none", ecolor="black",
+                capsize=4, linewidth=1.2)
+    for bar, acc in zip(bars, accs):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.03,
+                f"{acc:.0%}", ha="center", va="bottom", fontweight="bold", fontsize=10)
+    ax.set_ylabel("Accuracy")
+    ax.set_title("Accuracy by Prompting Strategy (n=20, Wilson 95% CI)")
+    ax.set_ylim(0, 1.0)
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f"{y:.0%}"))
+    ax.tick_params(axis="x", rotation=15)
+    sns.despine()
     fig.tight_layout()
-    fig.savefig(os.path.join(FIGURES_DIR, "accuracy_by_strategy.png"), dpi=180)
+    fig.savefig(os.path.join(FIGURES_DIR, "accuracy_by_strategy.png"), dpi=150)
     plt.close(fig)
-    print("  -> accuracy_by_strategy.png")
+    print("  accuracy_by_strategy.png")
 
 
-def chart_confidence():
-    buckets = ["1.0\n(unanimous)", "0.8", "0.6", "0.4"]
-    correct_pct = [100, 86, 50, 33]
-    ns = [5, 7, 4, 3]
-    colors = [TEAL, TEAL, AMBER, TERRA]
+# -- Figure 2: confidence_routing.png ------------------------------------------
 
-    fig, ax = plt.subplots(figsize=(7, 5))
-    bars = ax.bar(buckets, correct_pct, color=colors, width=0.55, edgecolor="white", linewidth=0.5)
+def fig_confidence_routing(data):
+    examples = data["self_consistency_k5"]["examples"]
+    conf = [e["confidence"] for e in examples]
+    correct = [e["correct"] for e in examples]
 
-    # Random baseline
-    ax.axhline(50, color="gray", linestyle="--", linewidth=1, zorder=0)
+    # Bucket by confidence
+    buckets = {"<= 0.6": [], "0.8": [], "1.0": []}
+    for c, cor in zip(conf, correct):
+        if c <= 0.6:
+            buckets["<= 0.6"].append(cor)
+        elif c < 1.0:
+            buckets["0.8"].append(cor)
+        else:
+            buckets["1.0"].append(cor)
 
-    # Labels
-    for bar, val, n in zip(bars, correct_pct, ns):
-        ax.text(
-            bar.get_x() + bar.get_width() / 2,
-            val + 1.5,
-            f"{val}%  (n={n})",
-            ha="center", va="bottom", fontweight="bold", fontsize=11,
-        )
+    bucket_names = list(buckets.keys())
+    bucket_accs = [np.mean(v) if v else 0 for v in buckets.values()]
+    bucket_ns = [len(v) for v in buckets.values()]
 
-    ax.set_xlabel("Vote Confidence")
-    ax.set_ylabel("Correct (%)")
-    ax.set_ylim(0, 120)
-    ax.set_title("Self-Consistency: Vote Confidence as Routing Signal", fontweight="bold", fontsize=13)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.5), gridspec_kw={"width_ratios": [3, 2]})
 
+    # Left: strip plot of confidence vs correctness
+    jitter = np.random.RandomState(42).uniform(-0.08, 0.08, len(conf))
+    colors_strip = ["#2ecc71" if c else "#e74c3c" for c in correct]
+    x_pos = [1 if c else 0 for c in correct]
+    ax1.scatter([x + j for x, j in zip(x_pos, jitter)], conf, c=colors_strip,
+                s=80, alpha=0.8, edgecolors="white", linewidth=0.5)
+    ax1.set_xticks([0, 1])
+    ax1.set_xticklabels(["Incorrect", "Correct"])
+    ax1.set_ylabel("Vote Confidence")
+    ax1.set_title("Confidence vs Correctness")
+    ax1.set_ylim(0.3, 1.1)
+    ax1.axhline(0.8, color="gray", linestyle="--", linewidth=0.8, alpha=0.6)
+    ax1.text(1.05, 0.8, "threshold", fontsize=8, color="gray", va="center")
+
+    # Right: accuracy by confidence bucket
+    bar_colors = ["#e74c3c", "#f39c12", "#2ecc71"]
+    bars = ax2.bar(bucket_names, bucket_accs, color=bar_colors, edgecolor="white", linewidth=0.8)
+    for bar, acc, n in zip(bars, bucket_accs, bucket_ns):
+        ax2.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.03,
+                 f"{acc:.0%}\n(n={n})", ha="center", va="bottom", fontsize=9)
+    ax2.set_ylabel("Accuracy")
+    ax2.set_xlabel("Vote Confidence")
+    ax2.set_title("Accuracy by Confidence Bucket")
+    ax2.set_ylim(0, 1.2)
+    ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f"{y:.0%}"))
+    sns.despine(ax=ax1)
+    sns.despine(ax=ax2)
     fig.tight_layout()
-    fig.savefig(os.path.join(FIGURES_DIR, "confidence_routing.png"), dpi=180)
+    fig.savefig(os.path.join(FIGURES_DIR, "confidence_routing.png"), dpi=150)
     plt.close(fig)
-    print("  -> confidence_routing.png")
+    print("  confidence_routing.png")
 
 
-def chart_latency_throughput():
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+# -- Figure 3: latency_throughput.png ------------------------------------------
 
-    # --- Left: TTFT vs Concurrency (grouped bar) ---
-    concurrency = ["c=1", "c=3", "c=5"]
-    short_ttft = [130, 3200, 5800]
-    long_ttft = [300, 4100, None]  # c=5 missing for long
+def fig_latency_throughput(metrics_path):
+    df = pd.read_csv(metrics_path)
+    df = df[df["success"] == True].copy()
+    # Exclude cold-start first row
+    df = df.iloc[1:]
 
-    x = np.arange(len(concurrency))
-    w = 0.35
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
 
-    bars1 = ax1.bar(x - w / 2, short_ttft, w, label="Short prompts", color=NAVY, edgecolor="white", linewidth=0.5)
-    long_vals = [v if v is not None else 0 for v in long_ttft]
-    bars2 = ax1.bar(x + w / 2, long_vals, w, label="Long prompts", color=AMBER, edgecolor="white", linewidth=0.5)
-    # Hide the missing bar
-    bars2[2].set_visible(False)
-
-    for bar, val in zip(bars1, short_ttft):
-        ax1.text(bar.get_x() + bar.get_width() / 2, val + 80, str(val),
-                 ha="center", va="bottom", fontweight="bold", fontsize=9)
-    for bar, val in zip(bars2, long_ttft):
-        if val is not None:
-            ax1.text(bar.get_x() + bar.get_width() / 2, val + 80, str(val),
-                     ha="center", va="bottom", fontweight="bold", fontsize=9)
-
-    ax1.set_xticks(x)
-    ax1.set_xticklabels(concurrency)
+    # Left: TTFT boxplot by batch_label
+    order = sorted(df["batch_label"].unique())
+    sns.boxplot(data=df, x="batch_label", y="ttft_ms", hue="batch_label", order=order, ax=ax1,
+                palette="Blues_d", fliersize=3, legend=False)
+    ax1.set_xlabel("Batch Configuration")
     ax1.set_ylabel("TTFT (ms)")
-    ax1.set_title("Time to First Token vs Concurrency", fontweight="bold", fontsize=12)
-    ax1.legend(frameon=False, fontsize=9)
-    ax1.spines["top"].set_visible(False)
-    ax1.spines["right"].set_visible(False)
+    ax1.set_title("Time to First Token by Configuration")
+    ax1.tick_params(axis="x", rotation=30)
 
-    # --- Right: Throughput (single-color bars) ---
-    labels = ["short\nc=1", "short\nc=3", "short\nc=5", "long\nc=1", "long\nc=3"]
-    throughput = [65, 62, 58, 64, 60]
+    # Right: throughput barplot by batch_label
+    throughput = df.groupby("batch_label")["tokens_per_sec"].mean().reindex(order)
+    ax2.bar(order, throughput.values, color=sns.color_palette("Blues_d", len(order)),
+            edgecolor="white", linewidth=0.8)
+    for i, (lbl, val) in enumerate(zip(order, throughput.values)):
+        ax2.text(i, val + 1, f"{val:.1f}", ha="center", va="bottom", fontsize=8)
+    ax2.set_xlabel("Batch Configuration")
+    ax2.set_ylabel("Throughput (tok/s)")
+    ax2.set_title("Mean Throughput by Configuration")
+    ax2.tick_params(axis="x", rotation=30)
 
-    bars3 = ax2.bar(labels, throughput, color=TEAL, width=0.55, edgecolor="white", linewidth=0.5)
-    for bar, val in zip(bars3, throughput):
-        ax2.text(bar.get_x() + bar.get_width() / 2, val + 0.5, str(val),
-                 ha="center", va="bottom", fontweight="bold", fontsize=10)
-
-    ax2.set_ylabel("tok/s")
-    ax2.set_ylim(0, 80)
-    ax2.set_title("Throughput (tok/s)", fontweight="bold", fontsize=12)
-    ax2.spines["top"].set_visible(False)
-    ax2.spines["right"].set_visible(False)
-
+    sns.despine(ax=ax1)
+    sns.despine(ax=ax2)
     fig.tight_layout()
-    fig.savefig(os.path.join(FIGURES_DIR, "latency_throughput.png"), dpi=180)
+    fig.savefig(os.path.join(FIGURES_DIR, "latency_throughput.png"), dpi=150)
     plt.close(fig)
-    print("  -> latency_throughput.png")
+    print("  latency_throughput.png")
+
+
+# -- Main ---------------------------------------------------------------------
+
+def main():
+    os.makedirs(FIGURES_DIR, exist_ok=True)
+    plt.style.use("seaborn-v0_8-whitegrid")
+
+    print("Generating figures...")
+
+    with open(ABLATION_PATH) as f:
+        ablation = json.load(f)
+
+    fig_accuracy_by_strategy(ablation)
+    fig_confidence_routing(ablation)
+    fig_latency_throughput(METRICS_PATH)
+
+    print(f"Done. Figures saved to {FIGURES_DIR}/")
 
 
 if __name__ == "__main__":
-    print("Generating figures...")
-    chart_accuracy()
-    chart_confidence()
-    chart_latency_throughput()
-    print("Done.")
+    main()
