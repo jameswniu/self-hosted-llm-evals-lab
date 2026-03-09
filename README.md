@@ -51,39 +51,34 @@ Override the model: `MODEL=mistral:7b make eval`
 ## Architecture
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b', 'edgeLabelBackground': '#ffffff', 'clusterBkg': '#f8fafc', 'clusterBorder': '#94a3b8'}, 'flowchart': {'curve': 'linear'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
 flowchart TD
-    classDef serving fill:#2D5FAF,stroke:#1A3D7A,color:#ffffff,stroke-width:2px
-    classDef eval fill:#C44B3B,stroke:#8B2E22,color:#ffffff,stroke-width:2px
-    classDef ops fill:#278F84,stroke:#1A6359,color:#ffffff,stroke-width:2px
-    classDef cache fill:#7B52C7,stroke:#53348A,color:#ffffff,stroke-width:2px
+    classDef blue fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
+    classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
+    classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
+    classDef purple fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
 
-    subgraph Serving["Serving Layer"]
-        OL(["Ollama<br/>llama3.1:8b Q4_0"]):::serving
+    OL(["Ollama · llama3.1:8b Q4_0"]):::blue
+
+    subgraph eval ["Eval & Ablation"]
+        BR["Benchmark Runner<br/>lm-eval-harness"]:::orange
+        AB["Ablation Engine<br/>5 strategies x 20 items"]:::orange
     end
 
-    subgraph EvalAblation["Eval & Ablation"]
-        BR["Benchmark Runner<br/>lm-eval-harness"]:::eval
-        AB["Ablation Engine<br/>optimize_prompt.py"]:::eval
+    subgraph ops ["Ops & Validation"]
+        LT["Load Tester<br/>concurrent streaming"]:::green
+        DV["Determinism Validator<br/>5x5 greedy matrix"]:::green
     end
 
-    subgraph OpsValidation["Ops & Validation"]
-        LT["Load Tester<br/>ThreadPoolExecutor"]:::ops
-        DV["Determinism Validator<br/>5x5 matrix"]:::ops
-    end
+    PC[("Prompt Cache<br/>SHA-256 keyed")]:::purple
 
-    subgraph PromptCache["Prompt Cache"]
-        PC[("SHA-256<br/>Prompt Cache")]:::cache
-    end
-
-    OL -->|"hellaswag, mmlu"| BR
-    OL -->|"templates x decoding"| AB
-    OL -->|"concurrent streaming"| LT
-    OL -->|"greedy + seed=42"| DV
-
-    BR -.->|"cache hit"| PC
-    AB -.->|"cache hit"| PC
-    DV -.->|"cache hit"| PC
+    OL --> BR
+    OL --> AB
+    OL --> LT
+    OL --> DV
+    BR -.-> PC
+    AB -.-> PC
+    DV -.-> PC
 ```
 
 Every (model, prompt, params) call is hashed via `SHA-256(JSON.dumps({"model": m, "prompt": p, **params}, sort_keys=True))` and cached to `.cache/{hash}.json`. Repeated evaluations hit the cache instead of the inference endpoint, which makes ablation runs efficient and results reproducible. Deterministic baselines (temperature=0, top_k=1, fixed seed) are enforced before any comparison.
@@ -113,42 +108,20 @@ Few-shot examples partially recovered CoT losses (35% to 55%) by constraining ou
 #### Ablation pipeline
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#94a3b8'}, 'flowchart': {'curve': 'linear'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
 flowchart LR
-    classDef phase1 fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
-    classDef phase2 fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
-    classDef stats fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
+    classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
+    classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
+    classDef purple fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
 
-    subgraph Phase1["Phase 1: Template Selection"]
-        direction TB
-        T1["baseline<br/>(complete the passage)"]:::phase1
-        T2["instruction"]:::phase1
-        T3["chain-of-thought"]:::phase1
-        T4["few-shot + CoT"]:::phase1
-        GD["Greedy decoding<br/>temp=0, top_k=1, seed=42"]:::phase1
-        T1 --> GD
-        T2 --> GD
-        T3 --> GD
-        T4 --> GD
-        GD --> BEST["Best template<br/>(highest accuracy)"]:::phase1
-    end
+    T["4 Templates<br/>baseline · instruction<br/>CoT · few-shot + CoT"]:::orange
+    GD["Greedy Decode<br/>temp=0, seed=42"]:::orange
+    BEST["Best Template"]:::orange
+    SC["Self-Consistency<br/>k=5, temp=0.7"]:::green
+    MV["Majority Vote<br/>confidence = winner / k"]:::green
+    STAT["Wilson CIs +<br/>McNemar's test"]:::purple
 
-    subgraph Phase2["Phase 2: Self-Consistency"]
-        direction TB
-        SC["k=5 samples<br/>temp=0.7, top_p=0.95<br/>top_k=40, seeds 42..46"]:::phase2
-        MV["Majority vote<br/>confidence = winner/k"]:::phase2
-        SC --> MV
-    end
-
-    subgraph Stats["Statistical Comparison"]
-        direction TB
-        WCI["Wilson score CIs"]:::stats
-        MN["McNemar's test"]:::stats
-    end
-
-    BEST --> SC
-    MV --> WCI
-    MV --> MN
+    T --> GD --> BEST --> SC --> MV --> STAT
 ```
 
 ### Self-consistency and confidence routing
@@ -156,42 +129,23 @@ flowchart LR
 Self-consistency (5 samples at temperature=0.7, majority vote) was the only strategy that improved accuracy: +10pp over baseline at 5x latency cost.
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#94a3b8'}, 'flowchart': {'curve': 'linear'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
 flowchart LR
-    classDef gen fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
-    classDef ext fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
-    classDef vote fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
-    classDef route fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
+    classDef blue fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
+    classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
+    classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
+    classDef purple fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
 
-    subgraph Generate["Parallel Generation"]
-        P["Prompt"]:::gen --> G1["seed=42<br/>temp=0.7<br/>top_p=0.95<br/>top_k=40"]:::gen
-        P --> G2["seed=43"]:::gen
-        P --> G3["seed=44"]:::gen
-        P --> G4["seed=45"]:::gen
-        P --> G5["seed=46"]:::gen
-    end
+    P["Prompt"]:::blue
+    GEN["Generate k=5 samples<br/>seeds 42-46, temp=0.7"]:::blue
+    EXT["Extract Answers<br/>3-tier regex"]:::orange
+    VOTE["Majority Vote<br/>confidence = winner / k"]:::green
+    HIGH[/"conf >= 0.8 : serve"/]:::green
+    LOW[/"conf <= 0.6 : cascade<br/>to larger model"/]:::purple
 
-    subgraph Extract["Answer Extraction"]
-        G1 --> E1["extract_answer()<br/>3-tier regex"]:::ext
-        G2 --> E2["extract_answer()"]:::ext
-        G3 --> E3["extract_answer()"]:::ext
-        G4 --> E4["extract_answer()"]:::ext
-        G5 --> E5["extract_answer()"]:::ext
-    end
-
-    subgraph Vote["Majority Vote"]
-        E1 --> C["Counter()<br/>winner, count"]:::vote
-        E2 --> C
-        E3 --> C
-        E4 --> C
-        E5 --> C
-        C --> CONF["confidence =<br/>winner_count / k"]:::vote
-    end
-
-    subgraph Route["Confidence Routing"]
-        CONF -->|">= 0.8"| SERVE["Serve answer"]:::route
-        CONF -->|"<= 0.6"| CASCADE["Cascade to<br/>larger model"]:::route
-    end
+    P --> GEN --> EXT --> VOTE
+    VOTE --> HIGH
+    VOTE --> LOW
 ```
 
 Self-consistency config: `k=5, temperature=0.7, top_p=0.95, top_k=40, seeds=[42,43,44,45,46], max_tokens=128`.
@@ -217,40 +171,33 @@ This suggests a production routing strategy: run self-consistency on the small m
 TTFT measured via streaming first non-empty chunk. Throughput from Ollama's `eval_count / eval_duration`. First request excluded (cold-start model load).
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#94a3b8'}, 'flowchart': {'curve': 'linear'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
 flowchart LR
-    classDef client fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
-    classDef queue fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
-    classDef metrics fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
+    classDef blue fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
+    classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
+    classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
 
-    subgraph Clients["ThreadPoolExecutor"]
-        C1["Thread 1<br/>prompt"]:::client
-        C2["Thread 2<br/>prompt"]:::client
-        C3["Thread 3<br/>prompt"]:::client
+    subgraph pool ["ThreadPoolExecutor"]
+        C1["Thread 1"]:::blue
+        C2["Thread 2"]:::blue
+        C3["Thread 3"]:::blue
     end
 
-    subgraph Queue["Ollama Request Queue"]
-        direction TB
-        Q["Sequential processing<br/>(no batching)"]:::queue
-        Q --> R1["Request 1<br/>streaming"]:::queue
-        Q --> R2["Request 2<br/>waiting..."]:::queue
-        Q --> R3["Request 3<br/>waiting..."]:::queue
-    end
+    Q["Ollama Queue<br/>sequential, no batching"]:::orange
 
-    subgraph Metrics["Metric Collection"]
-        direction TB
-        TTFT["TTFT<br/>first non-empty chunk"]:::metrics
-        TPS["tok/s<br/>eval_count / eval_duration"]:::metrics
-        AGG["numpy aggregation<br/>P50 / P95 / P99"]:::metrics
-        TTFT --> AGG
-        TPS --> AGG
+    subgraph metrics ["Metrics"]
+        TTFT["TTFT<br/>first non-empty chunk"]:::green
+        TPS["Throughput<br/>eval_count / eval_duration"]:::green
+        AGG["Aggregate<br/>P50 / P95 / P99"]:::green
     end
 
     C1 --> Q
     C2 --> Q
     C3 --> Q
-    R1 --> TTFT
-    R1 --> TPS
+    Q --> TTFT
+    Q --> TPS
+    TTFT --> AGG
+    TPS --> AGG
 ```
 
 TTFT scales linearly with concurrency because Ollama queues requests sequentially rather than batching. For scaling beyond single-GPU, continuous batching backends (vLLM, TGI) would be the next step.
