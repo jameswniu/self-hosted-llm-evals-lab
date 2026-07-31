@@ -327,4 +327,4 @@ self-hosted-llm-evals-lab/
 
 ## License
 
-MIT
+Apache-2.0
