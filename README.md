@@ -3,7 +3,7 @@
 Eval, benchmark, and optimize open-source LLMs you self-host as APIs.
 
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)
-![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)
 ![lm-eval-harness](https://img.shields.io/badge/lm--eval--harness-v0.4%2B-orange)
 ![Ollama](https://img.shields.io/badge/Ollama-compatible-purple)
 
