@@ -20,26 +20,23 @@
 <text x="36" y="42" fill="#3987e5" font-size="15" font-weight="700" letter-spacing="3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">PRODUCTION CASCADE</text>
 <text x="36" y="78" fill="#f3f6f9" font-size="25" font-weight="700">Spending the big model only where the small one is unsure</text>
 <rect x="36" y="92" width="130" height="2.5" fill="url(#rlc)"/>
-<rect x="32" y="130" width="198" height="108" fill="url(#ndc)" stroke="#3a4552" stroke-width="1.6" rx="4"/>
-<text x="131" y="166" fill="#f3f6f9" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">prompt</text>
-<text x="131" y="196" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">one item</text>
-<line x1="230" y1="184" x2="276" y2="184" stroke="#5a6673" stroke-width="1.8" marker-end="url(#arc)"/>
-<rect x="246" y="130" width="198" height="108" fill="url(#ndc)" stroke="#3987e5" stroke-width="1.6" rx="4"/>
-<text x="345" y="166" fill="#6fa8ec" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">generate k=5</text>
-<text x="345" y="196" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">temp 0.7, top_p 0.95</text>
-<text x="345" y="218" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">seeds 42 to 46</text>
-<line x1="444" y1="184" x2="490" y2="184" stroke="#5a6673" stroke-width="1.8" marker-end="url(#arc)"/>
-<rect x="460" y="130" width="198" height="108" fill="url(#ndc)" stroke="#3a4552" stroke-width="1.6" rx="4"/>
-<text x="559" y="166" fill="#f3f6f9" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">extract answers</text>
-<text x="559" y="196" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">3-tier regex normalizes</text>
-<text x="559" y="218" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">A, A., (A), answer is A</text>
-<line x1="658" y1="184" x2="704" y2="184" stroke="#5a6673" stroke-width="1.8" marker-end="url(#arc)"/>
-<rect x="674" y="130" width="198" height="108" fill="url(#ndc)" stroke="#8f9aa6" stroke-width="1.6" rx="4"/>
-<text x="773" y="166" fill="#f3f6f9" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">majority vote</text>
-<text x="773" y="196" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">confidence =</text>
-<text x="773" y="218" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">winning count / k</text>
-<path d="M 773 238 L 773 286 L 232 286 L 232 344" fill="none" stroke="#199e70" stroke-width="1.9" marker-end="url(#argc)"/>
-<path d="M 773 238 L 773 312 L 650 312 L 650 344" fill="none" stroke="#d95926" stroke-width="1.9" marker-end="url(#aroc)"/>
+<rect x="20" y="130" width="260" height="108" fill="url(#ndc)" stroke="#3987e5" stroke-width="1.6" rx="4"/>
+<text x="150" y="166" fill="#6fa8ec" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">generate k=5</text>
+<text x="150" y="196" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">temp 0.7, top_p 0.95</text>
+<text x="150" y="218" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">seeds 42 to 46</text>
+<line x1="280" y1="184" x2="312" y2="184" stroke="#5a6673" stroke-width="1.8" marker-end="url(#arc)"/>
+<rect x="320" y="130" width="260" height="108" fill="url(#ndc)" stroke="#3a4552" stroke-width="1.6" rx="4"/>
+<text x="450" y="166" fill="#f3f6f9" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">extract answers</text>
+<text x="450" y="196" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">3-tier regex normalizes</text>
+<text x="450" y="218" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">A, A., (A), answer is A</text>
+<line x1="580" y1="184" x2="612" y2="184" stroke="#5a6673" stroke-width="1.8" marker-end="url(#arc)"/>
+<rect x="620" y="130" width="260" height="108" fill="url(#ndc)" stroke="#8f9aa6" stroke-width="1.6" rx="4"/>
+<text x="750" y="166" fill="#f3f6f9" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">majority vote</text>
+<text x="750" y="196" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">confidence =</text>
+<text x="750" y="218" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">winning count / k</text>
+<text x="20" y="118" fill="#5c6773" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">one item in</text>
+<path d="M 750 238 L 750 286 L 232 286 L 232 344" fill="none" stroke="#199e70" stroke-width="1.9" marker-end="url(#argc)"/>
+<path d="M 750 238 L 750 312 L 650 312 L 650 344" fill="none" stroke="#d95926" stroke-width="1.9" marker-end="url(#aroc)"/>
 <rect x="42" y="346" width="380" height="88" fill="#0d1a16" stroke="#199e70" stroke-width="1.8" rx="4"/>
 <text x="232" y="382" fill="#35b183" font-size="19" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">confidence &gt;= 0.8</text>
 <text x="232" y="410" fill="#9aa5b1" font-size="16" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">serve straight from the 8B</text>
