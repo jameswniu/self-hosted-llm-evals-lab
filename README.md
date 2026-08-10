@@ -39,7 +39,7 @@ It is that the same harness says, in the same breath, that n=20 is not enough to
 
 A number without an interval is a claim without a receipt. It cannot tell you whether you measured an effect or got lucky on twenty questions, and at the sample sizes most local eval runs can afford, that difference is the entire story.
 
-So this harness refuses to report an accuracy on its own. Every proportion comes back with a Wilson score interval. Every paired comparison against baseline goes through McNemar's test. Every run is gated behind a determinism check first, because an ablation across prompts means nothing if the same prompt does not return the same answer twice.
+So this harness refuses to report an accuracy on its own. Every proportion comes back with a Wilson score interval, and every paired comparison against baseline goes through McNemar's test. Determinism gets its own target, `make validate`, because an ablation across prompts means nothing if the same prompt does not return the same answer twice: it replays 5 prompts across 5 trials under greedy decoding and checks that every output is byte-identical.
 
 That discipline is what produced the honest version of the headline below. Chain-of-thought was the largest effect in the table. It was also, at this sample size, statistically indistinguishable from noise. Both sentences are true, and a harness that prints only the first one is selling you something.
 
@@ -47,12 +47,15 @@ That discipline is what produced the honest version of the headline below. Chain
 |---|---|---|
 | **Wilson interval** | How precise is this accuracy, really? | A 60% that is actually somewhere between 39% and 78% |
 | **McNemar's test** | Did this strategy beat baseline, or did the same items just shuffle? | A win that came from four items changing hands, not from a better prompt |
-| **Determinism gate** | Would this prompt score the same way twice? | Sampling noise being read as a prompt effect |
-| **SHA-256 prompt cache** | Is the comparison replaying identical calls or re-rolling them? | A rerun that quietly measures a different experiment |
+| **Determinism check** | Would this prompt score the same way twice? | Sampling noise being read as a prompt effect. Run it with `make validate`; it is a separate target, not yet a prerequisite of `make ablation` |
 
 ## Chain-of-thought made the model worse
 
 Every single-pass strategy scored below the minimal baseline, and chain-of-thought alone landed at the bottom of the table. Adding few-shot examples back on top of it recovered a good part of that loss.
+
+<p align="center">
+  <img src="assets/ablation-pipeline.svg" alt="Ablation pipeline: four prompt templates scored under greedy decoding, the winner carried into five-sample self-consistency voting, then Wilson intervals and McNemar tests" width="100%">
+</p>
 
 | Strategy | Accuracy | 95% CI | vs Baseline |
 |---|---|---|---|
@@ -71,6 +74,10 @@ The honest caveat, stated as loudly as the finding: none of this clears signific
 ## Vote confidence is a routing signal
 
 Self-consistency was the only strategy that beat baseline: five samples at temperature 0.7, majority vote, +10pp for 5x the latency. On a pure accuracy-per-dollar basis that is a bad trade.
+
+<p align="center">
+  <img src="assets/confidence-routing.svg" alt="Confidence routing: five samples are extracted by a three-tier regex and voted, then high-confidence answers are served from the small model while low-confidence answers cascade to a larger one" width="100%">
+</p>
 
 The vote itself is the thing worth keeping. How lopsided the five samples were turns out to predict whether the answer is right:
 
@@ -98,38 +105,14 @@ TTFT is measured from the first non-empty streamed chunk. Throughput comes from 
 
 ## Architecture
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
-flowchart TD
-    classDef blue fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
-    classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
-    classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
-    classDef purple fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
+Four Makefile targets, four independent pipelines, one served model. The detail worth knowing is that they do not all speak the same API. `lm-eval-harness` runs as a subprocess against the OpenAI-compatible surface, while the ablation, load, and determinism paths call Ollama's native endpoint directly.
 
-    OL(["Ollama · llama3.1:8b Q4_0"]):::blue
+<p align="center">
+  <img src="assets/architecture.svg" alt="Call graph: four Makefile targets drive four pipelines that reach one Ollama endpoint over two different API surfaces, with a standalone cached model wrapper parked off the path" width="100%">
+</p>
 
-    subgraph eval ["Eval & Ablation"]
-        BR["Benchmark Runner<br/>lm-eval-harness"]:::orange
-        AB["Ablation Engine<br/>5 strategies x 20 items"]:::orange
-    end
+`eval_runner/model.py` is drawn detached on purpose. It holds `OllamaEvalModel` and a `PromptCache` that keys on `SHA-256(model, prompt, params)` and writes to `.cache/{hash}.json`, and it speaks both surfaces above. No Makefile target imports it. It is a wrapper waiting to be adopted, not a layer any number on this page passed through, and saying so is cheaper than letting you find out by reading the call graph yourself. Routing the ablation loop through it is the single highest-value change left in this repo: it would make reruns replay instead of re-roll, and cut the cost of a 5x self-consistency pass to near zero on repeat.
 
-    subgraph ops ["Ops & Validation"]
-        LT["Load Tester<br/>concurrent streaming"]:::green
-        DV["Determinism Validator<br/>5x5 greedy matrix"]:::green
-    end
-
-    PC[("Prompt Cache<br/>SHA-256 keyed")]:::purple
-
-    OL --> BR
-    OL --> AB
-    OL --> LT
-    OL --> DV
-    BR -.-> PC
-    AB -.-> PC
-    DV -.-> PC
-```
-
-Every (model, prompt, params) call is hashed with `SHA-256(JSON.dumps({"model": m, "prompt": p, **params}, sort_keys=True))` and cached to `.cache/{hash}.json`. Repeated evaluations hit the cache instead of the inference endpoint, which is what keeps an ablation affordable and makes a rerun replay the same experiment instead of a new one.
 
 ## Quick start
 
@@ -231,8 +214,11 @@ self-hosted-llm-evals-lab/
 ├── CONTRIBUTING.md
 ├── requirements.txt
 │
-├── assets/
-│   └── hero.svg
+├── assets/                     # hand-authored SVG, no diagram runtime
+│   ├── hero.svg
+│   ├── architecture.svg
+│   ├── ablation-pipeline.svg
+│   └── confidence-routing.svg
 │
 ├── serve/                      # inference server management
 │   ├── serve.py                # Ollama lifecycle manager

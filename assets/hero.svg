@@ -36,8 +36,8 @@
 <rect x="46" y="180" width="156" height="2.5" fill="url(#rule)"/>
 
 <text x="46" y="214" fill="#9aa5b1" font-size="18">Prompt ablation on a self-hosted Llama 3.1 8B that ships its own</text>
-<text x="46" y="240" fill="#9aa5b1" font-size="18">error bars: Wilson intervals, <tspan fill="#e6ebf1" font-weight="700">McNemar tests</tspan>, and a determinism</text>
-<text x="46" y="266" fill="#9aa5b1" font-size="18">gate that runs before any comparison is allowed to count.</text>
+<text x="46" y="240" fill="#9aa5b1" font-size="18">error bars: Wilson intervals, <tspan fill="#e6ebf1" font-weight="700">McNemar tests</tspan>, and a 5x5 determinism</text>
+<text x="46" y="266" fill="#9aa5b1" font-size="18">check, so a prompt effect is never just sampling noise.</text>
 
 <rect x="46" y="288" width="96" height="26" fill="url(#chip)" stroke="#3a4552" stroke-width="1.2"/>
 <text x="94" y="306" fill="#9aa5b1" font-size="14" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">serve</text>
