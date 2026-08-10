@@ -12,16 +12,16 @@
 | Configuration | Accuracy | 95% CI | Lift |
 |---|---|---|---|
 | Baseline (default template) | 0.60 (12/20) | [0.39, 0.78] | – |
-| Instruction template | 0.50 (10/20) | [0.30, 0.70] | -10pp |
+| Instruction template | 0.55 (11/20) | [0.34, 0.74] | -5pp |
 | Chain-of-thought | 0.35 (7/20) | [0.18, 0.57] | -25pp |
 | Few-shot + CoT | 0.55 (11/20) | [0.34, 0.74] | -5pp |
 | Self-consistency (k=5) | 0.70 (14/20) | [0.48, 0.85] | +10pp |
 
-McNemar's test: p=0.48. Not significant at n=20.
+McNemar's test was run against an earlier configuration, not this one (see `ablation/results/comparison.json`, which pairs baseline against a 0.50 few-shot run and returns p=0.72). At n=20 no comparison in this table reaches significance: the intervals overlap heavily.
 
 ### Ablation details
 
-**Templates**: Tested baseline ("complete the passage"), instruction, CoT, and few-shot+CoT. The minimal baseline scored highest. Adding task instructions dropped accuracy by 10pp. The 8B model responds better to simple completion framing than explicit directives.
+**Templates**: Tested baseline ("complete the passage"), instruction, CoT, and few-shot+CoT. The minimal baseline scored highest. Adding task instructions dropped accuracy by 5pp. The 8B model responds better to simple completion framing than explicit directives.
 
 **Chain-of-thought**: Worst performer at -25pp. On commonsense completions, the model's step-by-step reasoning frequently overrode correct first-pass answers. Example: model picks B immediately with baseline, then with CoT writes "let me consider each option..." and switches to A.
 
@@ -120,6 +120,6 @@ Baseline (greedy) vs self-consistency (k=5, majority vote) and cross-template re
 
 - Self-consistency was the only strategy that improved accuracy (+10pp). Vote confidence (>=0.8 vs <=0.6) cleanly separates reliable from unreliable predictions.
 - CoT hurt at 8B scale (-25pp). The model's reasoning chains overrode correct pattern-matched answers on commonsense tasks.
-- Accuracy decreased monotonically with prompt complexity: 0.60 -> 0.50 -> 0.35. Few-shot examples partially recovered CoT losses (0.35 -> 0.55) by constraining output format.
+- Every single-pass strategy scored below the minimal baseline: 0.60 baseline, 0.55 instruction, 0.35 CoT. Few-shot examples partially recovered CoT losses (0.35 -> 0.55) by constraining output format.
 - n=20 is insufficient for significance testing. CIs span 30-40pp. Would need 200-400 examples to detect a 10pp effect at 80% power.
 - Some items (salon, volleyball) failed across all methods, indicating knowledge gaps that prompt engineering cannot address at this parameter count.

@@ -52,7 +52,7 @@ That discipline is what produced the honest version of the headline below. Chain
 
 ## Chain-of-thought made the model worse
 
-Accuracy decreased monotonically with prompt complexity. Each added layer of instruction degraded performance, and the most sophisticated single-pass strategy was the worst of the five.
+Every single-pass strategy scored below the minimal baseline, and chain-of-thought alone landed at the bottom of the table. Adding few-shot examples back on top of it recovered a good part of that loss.
 
 | Strategy | Accuracy | 95% CI | vs Baseline |
 |---|---|---|---|
@@ -66,7 +66,7 @@ Accuracy decreased monotonically with prompt complexity. Each added layer of ins
 
 At 8B parameters the model pattern-matches commonsense completions well, then reasons itself out of a correct first-pass answer when asked to think step by step. Few-shot examples recovered part of that loss by constraining the output format and capping how far the reasoning wandered.
 
-The honest caveat, stated as loudly as the finding: McNemar's test on the winning strategy against baseline returns p=0.48. At n=20 this is directionally interesting and statistically unproven. The confidence intervals overlap heavily, which is exactly what a 20-item run should look like.
+The honest caveat, stated as loudly as the finding: none of this clears significance at n=20. The baseline interval [0.39, 0.78] and the self-consistency interval [0.48, 0.85] overlap across most of their range, and a paired test on 20 items has almost no power to resolve a gap this size. The direction is worth chasing. The magnitude is not established.
 
 ## Vote confidence is a routing signal
 
@@ -219,6 +219,7 @@ Stated plainly, because an eval harness that hides its own limits is the thing i
 - **Quantization is uncontrolled.** All results are on Q4_0 weights. Whether 4-bit quantization interacts with prompting strategy is untested here.
 - **One task family.** The ablation ran on HellaSwag only. Chain-of-thought plausibly behaves differently on math, coding, and multi-step reasoning, where the reasoning chain is structurally load-bearing rather than decorative.
 - **Backend ceiling.** Ollama's sequential queue means the concurrency numbers describe Ollama, not the model. Real serving characteristics need a batching backend.
+- **The committed paired test is from an older run.** `ablation/results/comparison.json` came from an earlier pass in which self-consistency ran on the few-shot template and scored 50%, below baseline, and it reports McNemar chi2=0.125, p=0.72 for that pairing. It is not a test of the 70% self-consistency run in the table above, and should not be read as one. The per-strategy accuracies are computed independently and are unaffected. Regenerating that comparison against the current best config is the next change to this repo.
 
 ## Project structure
 
