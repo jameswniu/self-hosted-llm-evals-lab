@@ -57,6 +57,22 @@ Every single-pass strategy scored below the minimal baseline, and chain-of-thoug
   <img src="assets/ablation-pipeline.svg" alt="Ablation pipeline: four prompt templates scored under greedy decoding, the winner carried into five-sample self-consistency voting, then Wilson intervals and McNemar tests" width="100%">
 </p>
 
+<details>
+<summary>Mermaid source for this pipeline</summary>
+
+```mermaid
+flowchart LR
+    T["4 templates<br/>baseline, instruction, CoT, few-shot + CoT"]
+    G["greedy decode<br/>temp 0, top_k 1, seed 42"]
+    B["best template<br/>highest accuracy carried forward"]
+    S["self-consistency<br/>k=5, temp 0.7, seeds 42 to 46"]
+    V["majority vote<br/>confidence = winning count / k"]
+    ST["Wilson 95% intervals + McNemar paired test"]
+    T --> G --> B --> S --> V --> ST
+```
+
+</details>
+
 | Strategy | Accuracy | 95% CI | vs Baseline |
 |---|---|---|---|
 | Baseline (minimal template) | 60% (12/20) | [0.39, 0.78] | reference |
@@ -65,7 +81,7 @@ Every single-pass strategy scored below the minimal baseline, and chain-of-thoug
 | Few-shot + CoT | 55% (11/20) | [0.34, 0.74] | -5pp |
 | Self-consistency (k=5) | **70% (14/20)** | **[0.48, 0.85]** | **+10pp** |
 
-![Accuracy by prompting strategy, with Wilson 95% confidence intervals](docs/figures/accuracy_by_strategy.png)
+![Accuracy by prompting strategy, with Wilson 95% confidence intervals](docs/figures/accuracy_by_strategy.svg)
 
 At 8B parameters the model pattern-matches commonsense completions well, then reasons itself out of a correct first-pass answer when asked to think step by step. Few-shot examples recovered part of that loss by constraining the output format and capping how far the reasoning wandered.
 
@@ -79,12 +95,28 @@ Self-consistency was the only strategy that beat baseline: five samples at tempe
   <img src="assets/confidence-routing.svg" alt="Confidence routing: five samples are extracted by a three-tier regex and voted, then high-confidence answers are served from the small model while low-confidence answers cascade to a larger one" width="100%">
 </p>
 
+<details>
+<summary>Mermaid source for this cascade</summary>
+
+```mermaid
+flowchart LR
+    P["prompt, one item"] --> GEN["generate k=5<br/>temp 0.7, top_p 0.95, seeds 42 to 46"]
+    GEN --> EX["extract answers<br/>3-tier regex: A, A., (A), answer is A"]
+    EX --> VOTE["majority vote<br/>confidence = winning count / k"]
+    VOTE -->|"confidence >= 0.8"| SERVE["serve straight from the 8B"]
+    VOTE -->|"confidence <= 0.6"| CASCADE["cascade to a larger model"]
+```
+
+</details>
+
 The vote itself is the thing worth keeping. How lopsided the five samples were turns out to predict whether the answer is right:
 
-![Vote confidence against correctness, and accuracy by confidence bucket](docs/figures/confidence_routing.png)
+![Vote confidence against correctness, and accuracy by confidence bucket](docs/figures/confidence_routing.svg)
 
-- Confidence at or above 0.8: nearly always correct. Serve it from the small model.
-- Confidence at or below 0.6: close to a coin flip. Escalate to a larger endpoint.
+- Confidence at or above 0.8: correct on 8 of 10 items. Serve those from the small model.
+- Confidence at or below 0.6: correct on 2 of 5. Coin-flip territory, so escalate to a larger endpoint.
+
+Two caveats worth saying out loud. Only 15 of the 20 items carry logged per-item votes, and a perfect 5/5 vote was *not* the most reliable bucket here (3 items voted unanimously and one of them was wrong). So 0.8 is a starting knob for a cascade, not a calibrated threshold, and calibrating it properly is a job for a few hundred items.
 
 That is a production cascade you can actually build. Run the cheap model with self-consistency, keep the high-confidence answers, and spend the expensive model's budget only on the minority of items where the small model is visibly unsure.
 
@@ -97,7 +129,7 @@ That is a production cascade you can actually build. Run the cheap model with se
 | Short, c=5 | ~4531 | ~66 | 5 |
 | Long, c=1 | ~190 | ~63 | 1 |
 
-![Time to first token and throughput by batch configuration](docs/figures/latency_throughput.png)
+![Time to first token and throughput by batch configuration](docs/figures/latency_throughput.svg)
 
 TTFT scales linearly with concurrency while throughput stays flat, which is the signature of a backend that queues rather than batches. Ollama serves requests sequentially, so concurrency buys nothing here. A continuous-batching backend such as vLLM or TGI is the next step for any real load.
 
@@ -110,6 +142,34 @@ Four Makefile targets, four independent pipelines, one served model. The detail 
 <p align="center">
   <img src="assets/architecture.svg" alt="Call graph: four Makefile targets drive four pipelines that reach one Ollama endpoint over two different API surfaces, with a standalone cached model wrapper parked off the path" width="100%">
 </p>
+
+<details>
+<summary>Mermaid source for this diagram</summary>
+
+```mermaid
+flowchart TD
+    subgraph targets["Makefile targets"]
+        T1["make eval"]
+        T2["make ablation"]
+        T3["make perf"]
+        T4["make validate"]
+    end
+    T1 --> M1["run_eval.py<br/>subprocess: python -m lm_eval"]
+    T2 --> M2["optimize_prompt.py + infer.py<br/>4 templates, k=5 vote"]
+    T3 --> M3["load_test.py<br/>ThreadPoolExecutor, streaming TTFT"]
+    T4 --> M4["validate.py<br/>5 prompts x 5 trials, greedy seed 42"]
+    M1 --> API1["/v1/chat/completions<br/>OpenAI-compatible"]
+    M2 --> API2["/api/generate<br/>Ollama native"]
+    M3 --> API2
+    M4 --> API2
+    API1 --> OL[("Ollama, llama3.1:8b Q4_0, port 11434")]
+    API2 --> OL
+    SERVE["serve/serve.py, make serve"] -.manages.-> OL
+    WRAP["eval_runner/model.py<br/>OllamaEvalModel + SHA-256 PromptCache<br/>NOT on any Makefile path"]
+    WRAP -.not wired in.-> API2
+```
+
+</details>
 
 `eval_runner/model.py` is drawn detached on purpose. It holds `OllamaEvalModel` and a `PromptCache` that keys on `SHA-256(model, prompt, params)` and writes to `.cache/{hash}.json`, and it speaks both surfaces above. No Makefile target imports it. It is a wrapper waiting to be adopted, not a layer any number on this page passed through, and saying so is cheaper than letting you find out by reading the call graph yourself. Routing the ablation loop through it is the single highest-value change left in this repo: it would make reruns replay instead of re-roll, and cut the cost of a 5x self-consistency pass to near zero on repeat.
 

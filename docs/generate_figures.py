@@ -1,226 +1,149 @@
 #!/usr/bin/env python3
-"""Generate figures referenced by README.md into docs/figures/."""
+"""Generate every figure in docs/figures/ as SVG, straight from the results files.
 
-import json
-import os
-import sys
+Stdlib only: no matplotlib, no seaborn, no pandas. The figures are emitted as SVG
+so they stay sharp at any zoom and readable at 75% browser zoom, and so a reader
+can diff them in a pull request instead of eyeballing a re-rendered PNG.
 
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import seaborn as sns
+Sources of truth:
+  ablation/results/ablation_results.json   accuracy per strategy, per-item votes
+  perf/metrics.csv                         one row per load-test request
+"""
+import csv, json, math, os, sys
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIGURES_DIR = os.path.join(REPO_ROOT, "docs", "figures")
-ABLATION_PATH = os.path.join(REPO_ROOT, "ablation", "results", "ablation_results.json")
-METRICS_PATH = os.path.join(REPO_ROOT, "perf", "metrics.csv")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from svgkit import *  # noqa
 
-# Colorblind-safe palette that reads on both GitHub light and dark themes.
-# Figures are saved transparent, so nothing here may rely on a white or
-# black background to read correctly.
-BLUE = "#3987e5"    # neutral / non-highlighted series
-ORANGE = "#d95926"  # degradation case (e.g. chain-of-thought)
-AQUA = "#199e70"    # winning case (e.g. self-consistency)
-INK = "#6b7683"     # axis text, tick labels, titles, spines, gridlines
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FIG = os.path.join(ROOT, "docs", "figures")
+ABLATION = os.path.join(ROOT, "ablation", "results", "ablation_results.json")
+METRICS = os.path.join(ROOT, "perf", "metrics.csv")
+N = 20
 
 
-def wilson_ci(p, n, z=1.96):
-    """Wilson score 95% confidence interval for a proportion."""
-    denom = 1 + z**2 / n
-    centre = (p + z**2 / (2 * n)) / denom
-    spread = z * np.sqrt((p * (1 - p) + z**2 / (4 * n)) / n) / denom
-    return centre - spread, centre + spread
+def fig_accuracy(data):
+    H = 545
+    rows = [("Baseline", "template_baseline", BLUE), ("Instruction", "template_instruction", BLUE),
+            ("Chain-of-Thought", "template_cot", ORANGE), ("Few-shot + CoT", "template_fewshot_cot", BLUE),
+            ("Self-consistency", "self_consistency_k5", AQUA)]
+    s = head(H, "f1", "Accuracy by prompting strategy on 20 items, with Wilson 95 percent confidence intervals")
+    s += title_block("f1", "ABLATION RESULT", "Accuracy by prompting strategy")
+    x0, x1, ytop, ybot = 96, 864, 140, 400
+    for pct in (0, 25, 50, 75, 100):
+        y = ybot - (ybot - ytop) * pct / 100
+        s += f'<line x1="{x0}" y1="{y:.1f}" x2="{x1}" y2="{y:.1f}" stroke="{GRID}" stroke-width="1"/>\n'
+        s += txt(x0 - 14, y + 5, f"{pct}%", 15, MUTE, anchor="end")
+    slot = (x1 - x0) / len(rows)
+    for i, (label, key, col) in enumerate(rows):
+        acc = data[key]["accuracy"]
+        lo, hi = wilson(acc, N)
+        cx = x0 + slot * (i + 0.5)
+        bw = 96
+        by = ybot - (ybot - ytop) * acc
+        s += f'<rect x="{cx-bw/2:.1f}" y="{by:.1f}" width="{bw}" height="{ybot-by:.1f}" fill="{col}" rx="4"/>\n'
+        ylo, yhi = ybot - (ybot - ytop) * lo, ybot - (ybot - ytop) * hi
+        s += (f'<line x1="{cx}" y1="{yhi:.1f}" x2="{cx}" y2="{ylo:.1f}" stroke="{INK2}" stroke-width="2"/>\n'
+              f'<line x1="{cx-13}" y1="{yhi:.1f}" x2="{cx+13}" y2="{yhi:.1f}" stroke="{INK2}" stroke-width="2"/>\n'
+              f'<line x1="{cx-13}" y1="{ylo:.1f}" x2="{cx+13}" y2="{ylo:.1f}" stroke="{INK2}" stroke-width="2"/>\n')
+        s += txt(cx, yhi - 14, f"{acc:.0%}", 19, INK, weight="700")
+        s += txt(cx, ybot + 28, label, 15, INK3)
+        s += txt(cx, ybot + 50, f"{round(acc*N)}/{N}", 15, FAINT)
+    s += f'<line x1="{x0}" y1="{ybot}" x2="{x1}" y2="{ybot}" stroke="#46525f" stroke-width="1.5"/>\n'
+    s += caption(["Whiskers are Wilson 95% intervals on n=20. They overlap across most of their range, which is the honest",
+                  "read of a 20-item run: the ordering is suggestive, and no single pairwise gap here is established."], 496)
+    return s + "</svg>\n"
 
 
-def style_axes(ax):
-    """Shared dual-theme styling: transparent background, INK text/spines,
-    a recessive y-only grid. Called on every Axes right before sns.despine."""
-    ax.set_facecolor("none")
-    ax.patch.set_alpha(0)
-    ax.grid(False)
-    ax.grid(True, axis="y", color=INK, alpha=0.18, linewidth=0.8)
-    ax.set_axisbelow(True)
-    for spine in ax.spines.values():
-        spine.set_color(INK)
-    ax.tick_params(colors=INK, labelcolor=INK)
-    ax.title.set_color(INK)
-    ax.xaxis.label.set_color(INK)
-    ax.yaxis.label.set_color(INK)
+def fig_confidence(data):
+    H = 520
+    ex = data["self_consistency_k5"]["examples"]
+    levels = sorted({e["confidence"] for e in ex})
+    s = head(H, "f2", "Vote confidence against correctness for all fifteen logged items, and accuracy grouped by confidence bucket")
+    s += title_block("f2", "ROUTING SIGNAL", "Vote confidence against correctness")
+
+    x0, ybot, ytop = 92, 372, 150
+    s += txt(x0, 126, "one dot per logged item", 15, INK3, anchor="start")
+    slot = (470 - x0) / len(levels)
+    for i, lv in enumerate(levels):
+        cx = x0 + slot * (i + 0.5)
+        items = [e for e in ex if e["confidence"] == lv]
+        for j, e in enumerate(items):
+            col, r = (AQUA, 11) if e["correct"] else (ORANGE, 11)
+            cy = ybot - 26 - j * 26
+            s += f'<circle cx="{cx:.1f}" cy="{cy}" r="{r}" fill="{col}" stroke="{BG1}" stroke-width="2"/>\n'
+        ncor = sum(1 for e in items if e["correct"])
+        s += txt(cx, ybot + 26, f"{lv:.1f}", 16, INK3)
+        s += txt(cx, ybot + 48, f"{ncor}/{len(items)}", 14, FAINT)
+    s += f'<line x1="{x0}" y1="{ybot}" x2="470" y2="{ybot}" stroke="#46525f" stroke-width="1.5"/>\n'
+    s += txt(281, ybot + 76, "vote confidence", 15, MUTE)
+    s += f'<circle cx="344" cy="122" r="8" fill="{AQUA}"/>\n' + txt(360, 127, "correct", 14, MUTE, anchor="start")
+    s += f'<circle cx="430" cy="122" r="8" fill="{ORANGE}"/>\n' + txt(446, 127, "wrong", 14, MUTE, anchor="start")
+
+    bx0 = 540
+    s += txt(bx0, 126, "accuracy by bucket", 15, INK3, anchor="start")
+    buckets = [("&lt;= 0.6", [e for e in ex if e["confidence"] <= 0.6], ORANGE),
+               ("&gt;= 0.8", [e for e in ex if e["confidence"] >= 0.8], AQUA)]
+    bslot = (864 - bx0) / len(buckets)
+    for i, (name, items, col) in enumerate(buckets):
+        acc = sum(1 for e in items if e["correct"]) / len(items)
+        cx = bx0 + bslot * (i + 0.5)
+        by = ybot - (ybot - ytop) * acc
+        s += f'<rect x="{cx-64:.1f}" y="{by:.1f}" width="128" height="{ybot-by:.1f}" fill="{col}" rx="4"/>\n'
+        s += txt(cx, by - 14, f"{acc:.0%}", 19, INK, weight="700")
+        s += txt(cx, ybot + 26, name, 16, INK3)
+        s += txt(cx, ybot + 48, f"{sum(1 for e in items if e['correct'])}/{len(items)} items", 14, FAINT)
+    s += f'<line x1="{bx0}" y1="{ybot}" x2="864" y2="{ybot}" stroke="#46525f" stroke-width="1.5"/>\n'
+    s += caption(["Confident votes are right far more often than unsure ones, which is what makes the cascade worth building.",
+                  "With 15 logged items the split is a usable signal, not a calibrated threshold: treat 0.8 as a starting knob."], 470)
+    return s + "</svg>\n"
 
 
-# -- Figure 1: accuracy_by_strategy.png ----------------------------------------
+def fig_latency(rows):
+    H = 520
+    ok = [r for r in rows if r["success"] == "True"][1:]
+    by = {}
+    for r in ok:
+        by.setdefault(r["batch_label"], []).append((float(r["ttft_ms"]), float(r["tokens_per_sec"])))
+    labels = sorted(by, key=lambda k: sorted(x[0] for x in by[k])[len(by[k]) // 2])
+    s = head(H, "f3", "Median time to first token and mean throughput for each load-test configuration")
+    s += title_block("f3", "SERVING PROFILE", "Concurrency costs latency and buys nothing")
+    s += txt(300, 128, "median TTFT (ms, log scale)", 15, INK3, anchor="middle")
+    s += txt(700, 128, "mean throughput (tok/s)", 15, INK3, anchor="middle")
+    ax0, ax1 = 196, 500
+    bx0, bx1 = 596, 864
+    maxtps = max(sum(x[1] for x in v) / len(v) for v in by.values())
+    for i, lab in enumerate(labels):
+        vals = sorted(x[0] for x in by[lab])
+        p50 = vals[len(vals) // 2]
+        tps = sum(x[1] for x in by[lab]) / len(by[lab])
+        y = 156 + i * 40
+        conc = lab.split("_c")[1][0]
+        col = ORANGE if p50 > 1000 else BLUE
+        s += txt(184, y + 15, lab, 15, INK3, anchor="end")
+        lw = (ax1 - ax0) * (math.log10(p50) - 2) / (math.log10(9000) - 2)
+        s += f'<rect x="{ax0}" y="{y}" width="{max(lw,3):.1f}" height="22" fill="{col}" rx="3"/>\n'
+        s += txt(ax0 + max(lw, 3) + 10, y + 16, f"{p50:,.0f}", 15, INK2, anchor="start")
+        tw = (bx1 - bx0) * tps / maxtps
+        s += f'<rect x="{bx0}" y="{y}" width="{tw:.1f}" height="22" fill="{AQUA}" rx="3"/>\n'
+        s += txt(bx0 + tw + 10, y + 16, f"{tps:.0f}", 15, INK2, anchor="start")
+    yb = 156 + len(labels) * 40
+    s += f'<line x1="{ax0}" y1="{yb}" x2="{ax1}" y2="{yb}" stroke="#46525f" stroke-width="1.5"/>\n'
+    s += f'<line x1="{bx0}" y1="{yb}" x2="{bx1}" y2="{yb}" stroke="#46525f" stroke-width="1.5"/>\n'
+    s += caption(["Time to first token climbs by an order of magnitude once concurrency rises, while throughput stays flat near 65 tok/s.",
+                  "That is the signature of a backend that queues rather than batches: the work is serialized, so parallel callers only wait."], yb + 44)
+    return s + "</svg>\n"
 
-def fig_accuracy_by_strategy(data):
-    strategies = [
-        ("template_baseline", "Baseline"),
-        ("template_instruction", "Instruction"),
-        ("template_cot", "Chain-of-Thought"),
-        ("template_fewshot_cot", "Few-shot + CoT"),
-        ("self_consistency_k5", "Self-consistency k=5"),
-    ]
-    names = [s[1] for s in strategies]
-    accs = [data[s[0]]["accuracy"] for s in strategies]
-    n = 20
-
-    lo = [wilson_ci(a, n)[0] for a in accs]
-    hi = [wilson_ci(a, n)[1] for a in accs]
-    err_lo = [a - l for a, l in zip(accs, lo)]
-    err_hi = [h - a for a, h in zip(accs, hi)]
-
-    best_idx = int(np.argmax(accs))
-    worst_idx = int(np.argmin(accs))
-    colors = []
-    for i in range(len(accs)):
-        if i == best_idx:
-            colors.append(AQUA)
-        elif i == worst_idx:
-            colors.append(ORANGE)
-        else:
-            colors.append(BLUE)
-
-    fig, ax = plt.subplots(figsize=(8, 4.5))
-    fig.patch.set_alpha(0)
-    bars = ax.bar(names, accs, color=colors, edgecolor="none", linewidth=0.8, zorder=2)
-    ax.errorbar(names, accs, yerr=[err_lo, err_hi], fmt="none", ecolor=INK,
-                capsize=4, linewidth=1.2, zorder=3)
-    for bar, acc in zip(bars, accs):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.03,
-                f"{acc:.0%}", ha="center", va="bottom", fontweight="bold", fontsize=10,
-                color=INK)
-    ax.set_ylabel("Accuracy")
-    ax.set_title("Accuracy by Prompting Strategy (n=20, Wilson 95% CI)")
-    ax.set_ylim(0, 1.0)
-    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f"{y:.0%}"))
-    ax.tick_params(axis="x", rotation=15)
-    style_axes(ax)
-    sns.despine(ax=ax)
-    fig.tight_layout()
-    fig.savefig(os.path.join(FIGURES_DIR, "accuracy_by_strategy.png"), dpi=150, transparent=True)
-    plt.close(fig)
-    print("  accuracy_by_strategy.png")
-
-
-# -- Figure 2: confidence_routing.png ------------------------------------------
-
-def fig_confidence_routing(data):
-    examples = data["self_consistency_k5"]["examples"]
-    conf = [e["confidence"] for e in examples]
-    correct = [e["correct"] for e in examples]
-
-    # Bucket by confidence
-    buckets = {"<= 0.6": [], "0.8": [], "1.0": []}
-    for c, cor in zip(conf, correct):
-        if c <= 0.6:
-            buckets["<= 0.6"].append(cor)
-        elif c < 1.0:
-            buckets["0.8"].append(cor)
-        else:
-            buckets["1.0"].append(cor)
-
-    bucket_names = list(buckets.keys())
-    bucket_accs = [np.mean(v) if v else 0 for v in buckets.values()]
-    bucket_ns = [len(v) for v in buckets.values()]
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.5), gridspec_kw={"width_ratios": [3, 2]})
-    fig.patch.set_alpha(0)
-
-    # Left: strip plot of confidence vs correctness
-    jitter = np.random.RandomState(42).uniform(-0.08, 0.08, len(conf))
-    colors_strip = [AQUA if c else ORANGE for c in correct]
-    x_pos = [1 if c else 0 for c in correct]
-    ax1.scatter([x + j for x, j in zip(x_pos, jitter)], conf, c=colors_strip,
-                s=80, alpha=0.8, edgecolors="none", linewidth=0.5, zorder=2)
-    ax1.set_xticks([0, 1])
-    ax1.set_xticklabels(["Incorrect", "Correct"])
-    ax1.set_ylabel("Vote Confidence")
-    ax1.set_title("Confidence vs Correctness")
-    ax1.set_ylim(0.3, 1.1)
-    ax1.axhline(0.8, color=INK, linestyle="dashed", linewidth=0.8, alpha=0.6)
-    ax1.text(1.05, 0.8, "threshold", fontsize=8, color=INK, va="center")
-
-    # Right: accuracy by confidence bucket
-    bar_colors = [ORANGE, BLUE, AQUA]
-    bars = ax2.bar(bucket_names, bucket_accs, color=bar_colors, edgecolor="none", linewidth=0.8, zorder=2)
-    for bar, acc, n in zip(bars, bucket_accs, bucket_ns):
-        ax2.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.03,
-                 f"{acc:.0%}\n(n={n})", ha="center", va="bottom", fontsize=9, color=INK)
-    ax2.set_ylabel("Accuracy")
-    ax2.set_xlabel("Vote Confidence")
-    ax2.set_title("Accuracy by Confidence Bucket")
-    ax2.set_ylim(0, 1.2)
-    ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f"{y:.0%}"))
-    style_axes(ax1)
-    style_axes(ax2)
-    sns.despine(ax=ax1)
-    sns.despine(ax=ax2)
-    fig.tight_layout()
-    fig.savefig(os.path.join(FIGURES_DIR, "confidence_routing.png"), dpi=150, transparent=True)
-    plt.close(fig)
-    print("  confidence_routing.png")
-
-
-# -- Figure 3: latency_throughput.png ------------------------------------------
-
-def fig_latency_throughput(metrics_path):
-    df = pd.read_csv(metrics_path)
-    df = df[df["success"] == True].copy()
-    # Exclude cold-start first row
-    df = df.iloc[1:]
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
-    fig.patch.set_alpha(0)
-
-    # Left: TTFT boxplot by batch_label
-    order = sorted(df["batch_label"].unique())
-    sns.boxplot(data=df, x="batch_label", y="ttft_ms", hue="batch_label", order=order, ax=ax1,
-                fliersize=3, legend=False,
-                boxprops=dict(facecolor=BLUE, edgecolor=INK, linewidth=0.8),
-                whiskerprops=dict(color=INK, linewidth=0.8),
-                capprops=dict(color=INK, linewidth=0.8),
-                medianprops=dict(color=INK, linewidth=1.2),
-                flierprops=dict(markerfacecolor=INK, markeredgecolor=INK, markersize=3))
-    ax1.set_xlabel("Batch Configuration")
-    ax1.set_ylabel("TTFT (ms)")
-    ax1.set_title("Time to First Token by Configuration")
-    ax1.tick_params(axis="x", rotation=30)
-
-    # Right: throughput barplot by batch_label
-    throughput = df.groupby("batch_label")["tokens_per_sec"].mean().reindex(order)
-    ax2.bar(order, throughput.values, color=BLUE, edgecolor="none", linewidth=0.8, zorder=2)
-    for i, (lbl, val) in enumerate(zip(order, throughput.values)):
-        ax2.text(i, val + 1, f"{val:.1f}", ha="center", va="bottom", fontsize=8, color=INK)
-    ax2.set_xlabel("Batch Configuration")
-    ax2.set_ylabel("Throughput (tok/s)")
-    ax2.set_title("Mean Throughput by Configuration")
-    ax2.tick_params(axis="x", rotation=30)
-
-    style_axes(ax1)
-    style_axes(ax2)
-    sns.despine(ax=ax1)
-    sns.despine(ax=ax2)
-    fig.tight_layout()
-    fig.savefig(os.path.join(FIGURES_DIR, "latency_throughput.png"), dpi=150, transparent=True)
-    plt.close(fig)
-    print("  latency_throughput.png")
-
-
-# -- Main ---------------------------------------------------------------------
 
 def main():
-    os.makedirs(FIGURES_DIR, exist_ok=True)
-    # No seaborn whitegrid default background: figures are transparent and
-    # each Axes gets its own recessive INK gridline via style_axes() instead.
-
-    print("Generating figures...")
-
-    with open(ABLATION_PATH) as f:
-        ablation = json.load(f)
-
-    fig_accuracy_by_strategy(ablation)
-    fig_confidence_routing(ablation)
-    fig_latency_throughput(METRICS_PATH)
-
-    print(f"Done. Figures saved to {FIGURES_DIR}/")
+    os.makedirs(FIG, exist_ok=True)
+    data = json.load(open(ABLATION))
+    rows = list(csv.DictReader(open(METRICS)))
+    for name, svg in [("accuracy_by_strategy", fig_accuracy(data)),
+                      ("confidence_routing", fig_confidence(data)),
+                      ("latency_throughput", fig_latency(rows))]:
+        p = os.path.join(FIG, f"{name}.svg")
+        open(p, "w").write(svg)
+        print(f"  docs/figures/{name}.svg  {os.path.getsize(p):,} bytes")
 
 
 if __name__ == "__main__":

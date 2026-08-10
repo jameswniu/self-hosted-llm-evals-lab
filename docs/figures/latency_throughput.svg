@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520" role="img" aria-label="Median time to first token and mean throughput for each load-test configuration" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
+<defs>
+  <linearGradient id="bgf3" x1="0" y1="0" x2="0.75" y2="1">
+    <stop offset="0" stop-color="#12161c"/><stop offset="0.55" stop-color="#0c1013"/><stop offset="1" stop-color="#080a0d"/>
+  </linearGradient>
+  <pattern id="dotf3" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.7" fill="#161d26"/></pattern>
+  <linearGradient id="ndf3" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#19212b"/><stop offset="1" stop-color="#111820"/>
+  </linearGradient>
+  <linearGradient id="rlf3" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#3987e5" stop-opacity="0.95"/><stop offset="1" stop-color="#3987e5" stop-opacity="0"/>
+  </linearGradient>
+  <marker id="arf3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#5a6673"/></marker>
+  <marker id="argf3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#199e70"/></marker>
+  <marker id="arof3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d95926"/></marker>
+  <marker id="arbf3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3987e5"/></marker>
+</defs>
+<rect x="0" y="0" width="900" height="520" fill="url(#bgf3)"/>
+<rect x="0" y="0" width="900" height="520" fill="url(#dotf3)"/>
+<text x="36" y="42" fill="#3987e5" font-size="15" font-weight="700" letter-spacing="3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">SERVING PROFILE</text>
+<text x="36" y="78" fill="#f3f6f9" font-size="25" font-weight="700">Concurrency costs latency and buys nothing</text>
+<rect x="36" y="92" width="130" height="2.5" fill="url(#rlf3)"/>
+<text x="300" y="128" fill="#9aa5b1" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">median TTFT (ms, log scale)</text>
+<text x="700" y="128" fill="#9aa5b1" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">mean throughput (tok/s)</text>
+<text x="184" y="171" fill="#9aa5b1" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">short_c1</text>
+<rect x="196" y="156" width="19.1" height="22" fill="#3987e5" rx="3"/>
+<text x="225.09816857773637" y="172" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">133</text>
+<rect x="596" y="156" width="259.5" height="22" fill="#199e70" rx="3"/>
+<text x="865.4672290611975" y="172" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">67</text>
+<text x="184" y="211" fill="#9aa5b1" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">short_c1_stop</text>
+<rect x="196" y="196" width="21.5" height="22" fill="#3987e5" rx="3"/>
+<text x="227.53688765552653" y="212" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">138</text>
+<rect x="596" y="196" width="268.0" height="22" fill="#199e70" rx="3"/>
+<text x="874.0" y="212" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">69</text>
+<text x="184" y="251" fill="#9aa5b1" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">long_c1_stop</text>
+<rect x="196" y="236" width="37.1" height="22" fill="#3987e5" rx="3"/>
+<text x="243.1125764815332" y="252" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">173</text>
+<rect x="596" y="236" width="261.6" height="22" fill="#199e70" rx="3"/>
+<text x="867.5886323546658" y="252" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">68</text>
+<text x="184" y="291" fill="#9aa5b1" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">long_c1</text>
+<rect x="196" y="276" width="43.7" height="22" fill="#3987e5" rx="3"/>
+<text x="249.66361564090192" y="292" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">191</text>
+<rect x="596" y="276" width="242.2" height="22" fill="#199e70" rx="3"/>
+<text x="848.1725332071813" y="292" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">63</text>
+<text x="184" y="331" fill="#9aa5b1" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">short_c3</text>
+<rect x="196" y="316" width="120.6" height="22" fill="#3987e5" rx="3"/>
+<text x="326.60872726309765" y="332" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">596</text>
+<rect x="596" y="316" width="263.3" height="22" fill="#199e70" rx="3"/>
+<text x="869.3343229216667" y="332" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">68</text>
+<text x="184" y="371" fill="#9aa5b1" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">short_c5</text>
+<rect x="196" y="356" width="257.6" height="22" fill="#d95926" rx="3"/>
+<text x="463.64327206802886" y="372" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">4,531</text>
+<rect x="596" y="356" width="258.6" height="22" fill="#199e70" rx="3"/>
+<text x="864.55216525164" y="372" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">67</text>
+<text x="184" y="411" fill="#9aa5b1" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">long_c3</text>
+<rect x="196" y="396" width="300.7" height="22" fill="#d95926" rx="3"/>
+<text x="506.66293347783596" y="412" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">8,566</text>
+<rect x="596" y="396" width="239.2" height="22" fill="#199e70" rx="3"/>
+<text x="845.2246651818764" y="412" fill="#c8d2dc" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">62</text>
+<line x1="196" y1="436" x2="500" y2="436" stroke="#46525f" stroke-width="1.5"/>
+<line x1="596" y1="436" x2="864" y2="436" stroke="#46525f" stroke-width="1.5"/>
+<text x="36" y="480" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">Time to first token climbs by an order of magnitude once concurrency rises, while throughput stays flat near 65 tok/s.</text>
+<text x="36" y="502" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">That is the signature of a backend that queues rather than batches: the work is serialized, so parallel callers only wait.</text>
+</svg>

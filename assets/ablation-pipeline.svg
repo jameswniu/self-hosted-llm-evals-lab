@@ -1,55 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="1000" height="300" role="img" aria-label="Ablation pipeline: four prompt templates scored under greedy decoding, the winner carried into five-sample self-consistency voting, then Wilson intervals and McNemar tests" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" width="900" height="500" role="img" aria-label="Ablation pipeline: four prompt templates scored under greedy decoding, the winner carried into five-sample self-consistency voting, then Wilson intervals and McNemar tests" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
 <defs>
   <linearGradient id="bgb" x1="0" y1="0" x2="0.75" y2="1">
     <stop offset="0" stop-color="#12161c"/><stop offset="0.55" stop-color="#0c1013"/><stop offset="1" stop-color="#080a0d"/>
   </linearGradient>
-  <pattern id="dotsb" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.7" fill="#161d26"/></pattern>
-  <linearGradient id="nodeb" x1="0" y1="0" x2="0" y2="1">
+  <pattern id="dotb" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.7" fill="#161d26"/></pattern>
+  <linearGradient id="ndb" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#19212b"/><stop offset="1" stop-color="#111820"/>
   </linearGradient>
-  <linearGradient id="ruleb" x1="0" y1="0" x2="1" y2="0">
+  <linearGradient id="rlb" x1="0" y1="0" x2="1" y2="0">
     <stop offset="0" stop-color="#3987e5" stop-opacity="0.95"/><stop offset="1" stop-color="#3987e5" stop-opacity="0"/>
   </linearGradient>
-  <marker id="arwb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5663"/></marker>
-  <marker id="arwgb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#199e70"/></marker>
-  <marker id="arwob" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d95926"/></marker>
+  <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#5a6673"/></marker>
+  <marker id="argb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#199e70"/></marker>
+  <marker id="arob" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d95926"/></marker>
+  <marker id="arbb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3987e5"/></marker>
 </defs>
-<rect x="0" y="0" width="1000" height="300" fill="url(#bgb)"/>
-<rect x="0" y="0" width="1000" height="300" fill="url(#dotsb)"/>
-
-<text x="24" y="46" fill="#3987e5" font-size="13" font-weight="700" letter-spacing="3.2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">EXPERIMENTAL DESIGN</text>
-<text x="24" y="72" fill="#f3f6f9" font-size="19" font-weight="700">What the ablation actually runs</text>
-<rect x="24" y="84" width="120" height="2" fill="url(#ruleb)"/>
-<rect x="24" y="118" width="142" height="88" fill="url(#nodeb)" stroke="#3a4552" stroke-width="1.5" rx="3"/>
-<text x="95" y="149" fill="#f3f6f9" font-size="12.5" font-weight="700" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">4 templates</text>
-<text x="95" y="172" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">baseline, instruction</text>
-<text x="95" y="189" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">CoT, few-shot + CoT</text>
-<line x1="166" y1="162" x2="184" y2="162" stroke="#4a5663" stroke-width="1.7" marker-end="url(#arwb)"/>
-<rect x="186" y="118" width="142" height="88" fill="url(#nodeb)" stroke="#3a4552" stroke-width="1.5" rx="3"/>
-<text x="257" y="149" fill="#f3f6f9" font-size="12.5" font-weight="700" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">greedy decode</text>
-<text x="257" y="172" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">temp 0, top_k 1</text>
-<text x="257" y="189" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">seed 42</text>
-<line x1="328" y1="162" x2="346" y2="162" stroke="#4a5663" stroke-width="1.7" marker-end="url(#arwb)"/>
-<rect x="348" y="118" width="142" height="88" fill="url(#nodeb)" stroke="#3a4552" stroke-width="1.5" rx="3"/>
-<text x="419" y="149" fill="#f3f6f9" font-size="12.5" font-weight="700" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">best template</text>
-<text x="419" y="172" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">highest accuracy</text>
-<text x="419" y="189" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">carried forward</text>
-<line x1="490" y1="162" x2="508" y2="162" stroke="#199e70" stroke-width="1.7" marker-end="url(#arwgb)"/>
-<rect x="510" y="118" width="142" height="88" fill="url(#nodeb)" stroke="#199e70" stroke-width="1.5" rx="3"/>
-<text x="581" y="149" fill="#35b183" font-size="12.5" font-weight="700" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">self-consistency</text>
-<text x="581" y="172" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">k=5, temp 0.7</text>
-<text x="581" y="189" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">seeds 42 to 46</text>
-<line x1="652" y1="162" x2="670" y2="162" stroke="#199e70" stroke-width="1.7" marker-end="url(#arwgb)"/>
-<rect x="672" y="118" width="142" height="88" fill="url(#nodeb)" stroke="#199e70" stroke-width="1.5" rx="3"/>
-<text x="743" y="149" fill="#35b183" font-size="12.5" font-weight="700" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">majority vote</text>
-<text x="743" y="172" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">confidence =</text>
-<text x="743" y="189" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">winner / k</text>
-<line x1="814" y1="162" x2="832" y2="162" stroke="#4a5663" stroke-width="1.7" marker-end="url(#arwb)"/>
-<rect x="834" y="118" width="142" height="88" fill="url(#nodeb)" stroke="#8f9aa6" stroke-width="1.5" rx="3"/>
-<text x="905" y="149" fill="#f3f6f9" font-size="12.5" font-weight="700" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Wilson + McNemar</text>
-<text x="905" y="172" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">95% intervals</text>
-<text x="905" y="189" fill="#6b7683" font-size="10" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">paired test</text>
-
-<text x="24" y="250" fill="#6b7683" font-size="12">Every strategy is scored on the identical 20-item subset, so a difference between two bars is a difference in the prompt,</text>
-<text x="24" y="270" fill="#6b7683" font-size="12">not in the sample. Self-consistency is the only stage that leaves greedy decoding, and the only stage that improved.</text>
+<rect x="0" y="0" width="900" height="500" fill="url(#bgb)"/>
+<rect x="0" y="0" width="900" height="500" fill="url(#dotb)"/>
+<text x="36" y="42" fill="#3987e5" font-size="15" font-weight="700" letter-spacing="3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">EXPERIMENTAL DESIGN</text>
+<text x="36" y="78" fill="#f3f6f9" font-size="25" font-weight="700">What the ablation actually runs</text>
+<rect x="36" y="92" width="130" height="2.5" fill="url(#rlb)"/>
+<rect x="40" y="132" width="180" height="110" fill="url(#ndb)" stroke="#3a4552" stroke-width="1.6" rx="4"/>
+<text x="130" y="168" fill="#f3f6f9" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">4 templates</text>
+<text x="130" y="198" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">baseline, instruction</text>
+<text x="130" y="222" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">CoT, few-shot + CoT</text>
+<line x1="220" y1="187" x2="352" y2="187" stroke="#5a6673" stroke-width="1.8" marker-end="url(#arb)"/>
+<rect x="360" y="132" width="180" height="110" fill="url(#ndb)" stroke="#3a4552" stroke-width="1.6" rx="4"/>
+<text x="450" y="168" fill="#f3f6f9" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">greedy decode</text>
+<text x="450" y="198" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">temp 0, top_k 1</text>
+<text x="450" y="222" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">seed 42</text>
+<line x1="540" y1="187" x2="672" y2="187" stroke="#5a6673" stroke-width="1.8" marker-end="url(#arb)"/>
+<rect x="680" y="132" width="180" height="110" fill="url(#ndb)" stroke="#3a4552" stroke-width="1.6" rx="4"/>
+<text x="770" y="168" fill="#f3f6f9" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">best template</text>
+<text x="770" y="198" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">highest accuracy</text>
+<text x="770" y="222" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">carried forward</text>
+<rect x="40" y="300" width="180" height="110" fill="url(#ndb)" stroke="#199e70" stroke-width="1.6" rx="4"/>
+<text x="130" y="336" fill="#35b183" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">self-consistency</text>
+<text x="130" y="366" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">k=5, temp 0.7</text>
+<text x="130" y="390" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">seeds 42 to 46</text>
+<line x1="220" y1="355" x2="352" y2="355" stroke="#199e70" stroke-width="1.8" marker-end="url(#argb)"/>
+<rect x="360" y="300" width="180" height="110" fill="url(#ndb)" stroke="#199e70" stroke-width="1.6" rx="4"/>
+<text x="450" y="336" fill="#35b183" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">majority vote</text>
+<text x="450" y="366" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">confidence =</text>
+<text x="450" y="390" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">winning count / k</text>
+<line x1="540" y1="355" x2="672" y2="355" stroke="#199e70" stroke-width="1.8" marker-end="url(#argb)"/>
+<rect x="680" y="300" width="180" height="110" fill="url(#ndb)" stroke="#8f9aa6" stroke-width="1.6" rx="4"/>
+<text x="770" y="336" fill="#f3f6f9" font-size="17" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Wilson + McNemar</text>
+<text x="770" y="366" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">95% intervals</text>
+<text x="770" y="390" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">paired test</text>
+<path d="M 860 242 L 884 242 L 884 272 L 16 272 L 16 320 L 34 320" fill="none" stroke="#5a6673" stroke-width="1.8" marker-end="url(#arb)"/>
+<text x="36" y="452" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">Every strategy is scored on the identical 20-item subset, so a difference between two bars is a difference in the</text>
+<text x="36" y="474" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">prompt, not in the sample. Self-consistency is the only stage that leaves greedy decoding, and the only one that helped.</text>
 </svg>

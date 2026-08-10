@@ -69,7 +69,8 @@ ablation: ablation-prepare ablation-optimize ablation-eval
 
 # ─── Figures ──────────────────────────────────────────────────────────
 figures:
-	. .venv/bin/activate && python docs/generate_figures.py
+	python3 docs/generate_figures.py
+	python3 docs/generate_diagrams.py
 
 # ─── Housekeeping ─────────────────────────────────────────────────────
 clean:

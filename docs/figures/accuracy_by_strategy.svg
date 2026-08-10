@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 545" width="900" height="545" role="img" aria-label="Accuracy by prompting strategy on 20 items, with Wilson 95 percent confidence intervals" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
+<defs>
+  <linearGradient id="bgf1" x1="0" y1="0" x2="0.75" y2="1">
+    <stop offset="0" stop-color="#12161c"/><stop offset="0.55" stop-color="#0c1013"/><stop offset="1" stop-color="#080a0d"/>
+  </linearGradient>
+  <pattern id="dotf1" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.7" fill="#161d26"/></pattern>
+  <linearGradient id="ndf1" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#19212b"/><stop offset="1" stop-color="#111820"/>
+  </linearGradient>
+  <linearGradient id="rlf1" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#3987e5" stop-opacity="0.95"/><stop offset="1" stop-color="#3987e5" stop-opacity="0"/>
+  </linearGradient>
+  <marker id="arf1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#5a6673"/></marker>
+  <marker id="argf1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#199e70"/></marker>
+  <marker id="arof1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d95926"/></marker>
+  <marker id="arbf1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3987e5"/></marker>
+</defs>
+<rect x="0" y="0" width="900" height="545" fill="url(#bgf1)"/>
+<rect x="0" y="0" width="900" height="545" fill="url(#dotf1)"/>
+<text x="36" y="42" fill="#3987e5" font-size="15" font-weight="700" letter-spacing="3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ABLATION RESULT</text>
+<text x="36" y="78" fill="#f3f6f9" font-size="25" font-weight="700">Accuracy by prompting strategy</text>
+<rect x="36" y="92" width="130" height="2.5" fill="url(#rlf1)"/>
+<line x1="96" y1="400.0" x2="864" y2="400.0" stroke="#1e2731" stroke-width="1"/>
+<text x="82" y="405.0" fill="#7d8896" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">0%</text>
+<line x1="96" y1="335.0" x2="864" y2="335.0" stroke="#1e2731" stroke-width="1"/>
+<text x="82" y="340.0" fill="#7d8896" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">25%</text>
+<line x1="96" y1="270.0" x2="864" y2="270.0" stroke="#1e2731" stroke-width="1"/>
+<text x="82" y="275.0" fill="#7d8896" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">50%</text>
+<line x1="96" y1="205.0" x2="864" y2="205.0" stroke="#1e2731" stroke-width="1"/>
+<text x="82" y="210.0" fill="#7d8896" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">75%</text>
+<line x1="96" y1="140.0" x2="864" y2="140.0" stroke="#1e2731" stroke-width="1"/>
+<text x="82" y="145.0" fill="#7d8896" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">100%</text>
+<rect x="124.8" y="244.0" width="96" height="156.0" fill="#3987e5" rx="4"/>
+<line x1="172.8" y1="196.9" x2="172.8" y2="299.5" stroke="#c8d2dc" stroke-width="2"/>
+<line x1="159.8" y1="196.9" x2="185.8" y2="196.9" stroke="#c8d2dc" stroke-width="2"/>
+<line x1="159.8" y1="299.5" x2="185.8" y2="299.5" stroke="#c8d2dc" stroke-width="2"/>
+<text x="172.8" y="182.88903152769007" fill="#f3f6f9" font-size="19" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">60%</text>
+<text x="172.8" y="428" fill="#9aa5b1" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Baseline</text>
+<text x="172.8" y="450" fill="#5c6773" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">12/20</text>
+<rect x="278.4" y="257.0" width="96" height="143.0" fill="#3987e5" rx="4"/>
+<line x1="326.4" y1="207.1" x2="326.4" y2="311.1" stroke="#c8d2dc" stroke-width="2"/>
+<line x1="313.4" y1="207.1" x2="339.4" y2="207.1" stroke="#c8d2dc" stroke-width="2"/>
+<line x1="313.4" y1="311.1" x2="339.4" y2="311.1" stroke="#c8d2dc" stroke-width="2"/>
+<text x="326.4" y="193.13070542284416" fill="#f3f6f9" font-size="19" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">55%</text>
+<text x="326.4" y="428" fill="#9aa5b1" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Instruction</text>
+<text x="326.4" y="450" fill="#5c6773" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">11/20</text>
+<rect x="432.0" y="309.0" width="96" height="91.0" fill="#d95926" rx="4"/>
+<line x1="480.0" y1="252.5" x2="480.0" y2="352.9" stroke="#c8d2dc" stroke-width="2"/>
+<line x1="467.0" y1="252.5" x2="493.0" y2="252.5" stroke="#c8d2dc" stroke-width="2"/>
+<line x1="467.0" y1="352.9" x2="493.0" y2="352.9" stroke="#c8d2dc" stroke-width="2"/>
+<text x="480.0" y="238.5411326570608" fill="#f3f6f9" font-size="19" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">35%</text>
+<text x="480.0" y="428" fill="#9aa5b1" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Chain-of-Thought</text>
+<text x="480.0" y="450" fill="#5c6773" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">7/20</text>
+<rect x="585.6" y="257.0" width="96" height="143.0" fill="#3987e5" rx="4"/>
+<line x1="633.6" y1="207.1" x2="633.6" y2="311.1" stroke="#c8d2dc" stroke-width="2"/>
+<line x1="620.6" y1="207.1" x2="646.6" y2="207.1" stroke="#c8d2dc" stroke-width="2"/>
+<line x1="620.6" y1="311.1" x2="646.6" y2="311.1" stroke="#c8d2dc" stroke-width="2"/>
+<text x="633.6" y="193.13070542284416" fill="#f3f6f9" font-size="19" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">55%</text>
+<text x="633.6" y="428" fill="#9aa5b1" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Few-shot + CoT</text>
+<text x="633.6" y="450" fill="#5c6773" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">11/20</text>
+<rect x="739.2" y="218.0" width="96" height="182.0" fill="#199e70" rx="4"/>
+<line x1="787.1999999999999" y1="177.8" x2="787.1999999999999" y2="274.9" stroke="#c8d2dc" stroke-width="2"/>
+<line x1="774.1999999999999" y1="177.8" x2="800.1999999999999" y2="177.8" stroke="#c8d2dc" stroke-width="2"/>
+<line x1="774.1999999999999" y1="274.9" x2="800.1999999999999" y2="274.9" stroke="#c8d2dc" stroke-width="2"/>
+<text x="787.1999999999999" y="163.82357123193842" fill="#f3f6f9" font-size="19" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">70%</text>
+<text x="787.1999999999999" y="428" fill="#9aa5b1" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Self-consistency</text>
+<text x="787.1999999999999" y="450" fill="#5c6773" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">14/20</text>
+<line x1="96" y1="400" x2="864" y2="400" stroke="#46525f" stroke-width="1.5"/>
+<text x="36" y="496" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">Whiskers are Wilson 95% intervals on n=20. They overlap across most of their range, which is the honest</text>
+<text x="36" y="518" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">read of a 20-item run: the ordering is suggestive, and no single pairwise gap here is established.</text>
+</svg>

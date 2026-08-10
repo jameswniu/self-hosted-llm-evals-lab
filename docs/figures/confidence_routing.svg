@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520" role="img" aria-label="Vote confidence against correctness for all fifteen logged items, and accuracy grouped by confidence bucket" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
+<defs>
+  <linearGradient id="bgf2" x1="0" y1="0" x2="0.75" y2="1">
+    <stop offset="0" stop-color="#12161c"/><stop offset="0.55" stop-color="#0c1013"/><stop offset="1" stop-color="#080a0d"/>
+  </linearGradient>
+  <pattern id="dotf2" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.7" fill="#161d26"/></pattern>
+  <linearGradient id="ndf2" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#19212b"/><stop offset="1" stop-color="#111820"/>
+  </linearGradient>
+  <linearGradient id="rlf2" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#3987e5" stop-opacity="0.95"/><stop offset="1" stop-color="#3987e5" stop-opacity="0"/>
+  </linearGradient>
+  <marker id="arf2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#5a6673"/></marker>
+  <marker id="argf2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#199e70"/></marker>
+  <marker id="arof2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d95926"/></marker>
+  <marker id="arbf2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3987e5"/></marker>
+</defs>
+<rect x="0" y="0" width="900" height="520" fill="url(#bgf2)"/>
+<rect x="0" y="0" width="900" height="520" fill="url(#dotf2)"/>
+<text x="36" y="42" fill="#3987e5" font-size="15" font-weight="700" letter-spacing="3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ROUTING SIGNAL</text>
+<text x="36" y="78" fill="#f3f6f9" font-size="25" font-weight="700">Vote confidence against correctness</text>
+<rect x="36" y="92" width="130" height="2.5" fill="url(#rlf2)"/>
+<text x="92" y="126" fill="#9aa5b1" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">one dot per logged item</text>
+<circle cx="139.2" cy="346" r="11" fill="#d95926" stroke="#0c1013" stroke-width="2"/>
+<text x="139.25" y="398" fill="#9aa5b1" font-size="16" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">0.4</text>
+<text x="139.25" y="420" fill="#5c6773" font-size="14" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">0/1</text>
+<circle cx="233.8" cy="346" r="11" fill="#199e70" stroke="#0c1013" stroke-width="2"/>
+<circle cx="233.8" cy="320" r="11" fill="#199e70" stroke="#0c1013" stroke-width="2"/>
+<circle cx="233.8" cy="294" r="11" fill="#d95926" stroke="#0c1013" stroke-width="2"/>
+<circle cx="233.8" cy="268" r="11" fill="#d95926" stroke="#0c1013" stroke-width="2"/>
+<text x="233.75" y="398" fill="#9aa5b1" font-size="16" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">0.6</text>
+<text x="233.75" y="420" fill="#5c6773" font-size="14" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">2/4</text>
+<circle cx="328.2" cy="346" r="11" fill="#199e70" stroke="#0c1013" stroke-width="2"/>
+<circle cx="328.2" cy="320" r="11" fill="#199e70" stroke="#0c1013" stroke-width="2"/>
+<circle cx="328.2" cy="294" r="11" fill="#199e70" stroke="#0c1013" stroke-width="2"/>
+<circle cx="328.2" cy="268" r="11" fill="#199e70" stroke="#0c1013" stroke-width="2"/>
+<circle cx="328.2" cy="242" r="11" fill="#d95926" stroke="#0c1013" stroke-width="2"/>
+<circle cx="328.2" cy="216" r="11" fill="#199e70" stroke="#0c1013" stroke-width="2"/>
+<circle cx="328.2" cy="190" r="11" fill="#199e70" stroke="#0c1013" stroke-width="2"/>
+<text x="328.25" y="398" fill="#9aa5b1" font-size="16" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">0.8</text>
+<text x="328.25" y="420" fill="#5c6773" font-size="14" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">6/7</text>
+<circle cx="422.8" cy="346" r="11" fill="#d95926" stroke="#0c1013" stroke-width="2"/>
+<circle cx="422.8" cy="320" r="11" fill="#199e70" stroke="#0c1013" stroke-width="2"/>
+<circle cx="422.8" cy="294" r="11" fill="#199e70" stroke="#0c1013" stroke-width="2"/>
+<text x="422.75" y="398" fill="#9aa5b1" font-size="16" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">1.0</text>
+<text x="422.75" y="420" fill="#5c6773" font-size="14" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">2/3</text>
+<line x1="92" y1="372" x2="470" y2="372" stroke="#46525f" stroke-width="1.5"/>
+<text x="281" y="448" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">vote confidence</text>
+<circle cx="344" cy="122" r="8" fill="#199e70"/>
+<text x="360" y="127" fill="#7d8896" font-size="14" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">correct</text>
+<circle cx="430" cy="122" r="8" fill="#d95926"/>
+<text x="446" y="127" fill="#7d8896" font-size="14" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">wrong</text>
+<text x="540" y="126" fill="#9aa5b1" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">accuracy by bucket</text>
+<rect x="557.0" y="283.2" width="128" height="88.8" fill="#d95926" rx="4"/>
+<text x="621.0" y="269.2" fill="#f3f6f9" font-size="19" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">40%</text>
+<text x="621.0" y="398" fill="#9aa5b1" font-size="16" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">&lt;= 0.6</text>
+<text x="621.0" y="420" fill="#5c6773" font-size="14" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">2/5 items</text>
+<rect x="719.0" y="194.4" width="128" height="177.6" fill="#199e70" rx="4"/>
+<text x="783.0" y="180.39999999999998" fill="#f3f6f9" font-size="19" text-anchor="middle" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">80%</text>
+<text x="783.0" y="398" fill="#9aa5b1" font-size="16" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">&gt;= 0.8</text>
+<text x="783.0" y="420" fill="#5c6773" font-size="14" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">8/10 items</text>
+<line x1="540" y1="372" x2="864" y2="372" stroke="#46525f" stroke-width="1.5"/>
+<text x="36" y="470" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">Confident votes are right far more often than unsure ones, which is what makes the cascade worth building.</text>
+<text x="36" y="492" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">With 15 logged items the split is a usable signal, not a calibrated threshold: treat 0.8 as a starting knob.</text>
+</svg>
