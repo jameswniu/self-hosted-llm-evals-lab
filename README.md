@@ -1,52 +1,100 @@
-# self-hosted-llm-evals-lab
+<p align="center">
+  <img src="assets/hero.svg" alt="Self-hosted LLM evals lab: a prompt ablation harness that ships its own error bars, shown beside five strategy bars with Wilson confidence intervals" width="100%">
+</p>
 
-Eval, benchmark, and optimize open-source LLMs you self-host as APIs.
+<div align="center">
 
-![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)
-![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)
-![lm-eval-harness](https://img.shields.io/badge/lm--eval--harness-v0.4%2B-orange)
-![Ollama](https://img.shields.io/badge/Ollama-compatible-purple)
+<b><font size="6">Self-Hosted LLM Evals Lab</font></b>
 
-## The Problem
+<br/>
 
-You downloaded an open-source LLM. You're serving it with Ollama or vLLM. But you're flying blind:
+<img alt="python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-dfe3e0?style=flat-square&labelColor=0c1013">
+<img alt="harness lm-eval v0.4+" src="https://img.shields.io/badge/harness-lm--eval_v0.4%2B-8f9491?style=flat-square&labelColor=0c1013">
+<img alt="model llama 3.1 8B Q4_0" src="https://img.shields.io/badge/model-llama_3.1_8B_Q4__0-8f9491?style=flat-square&labelColor=0c1013">
+<img alt="serving Ollama or any OpenAI-compatible endpoint" src="https://img.shields.io/badge/serving-Ollama_%7C_OpenAI--compatible-8f9491?style=flat-square&labelColor=0c1013">
+<img alt="statistics Wilson CI and McNemar" src="https://img.shields.io/badge/stats-Wilson_CI_%2B_McNemar-8f9491?style=flat-square&labelColor=0c1013">
+<img alt="license Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-8f9491?style=flat-square&labelColor=0c1013">
 
-- You don't know how accurate it actually is on your tasks
-- Every "prompt engineering tip" you followed might be making things worse (we found CoT drops accuracy 25pp on Llama 3.1 8B Q4_0, HellaSwag n=20)
-- You have no idea if it can handle real traffic
-- You can't tell if outputs are even reproducible
+<br/><br/>
 
-This toolkit gives you answers before you ship to production.
+<strong>A prompt-ablation harness for self-hosted LLMs that reports its own uncertainty.</strong><br/>
+The interesting part is not that chain-of-thought cost this model 25 points of accuracy.<br/>
+It is that the same harness says, in the same breath, that n=20 is not enough to prove it.
 
-## What This Does
+<br/>
 
-- **Benchmark accuracy** (MMLU, HellaSwag, custom tasks) via [lm-eval-harness](https://github.com/EleutherAI/lm-evaluation-harness)
-- **Load-test throughput**, TTFT, P50/P95/P99 latency under concurrency
-- **Validate determinism** (greedy decoding + fixed seed, verified across 5x5 trials)
-- **Optimize prompts** via systematic ablation (templates, CoT, few-shot, self-consistency voting)
+<code>serve -> eval -> ablate -> validate</code>
 
-Works with [Ollama](https://ollama.com), or any OpenAI-compatible `/v1/chat/completions` endpoint. Evals run in generative mode (`--model local-chat-completions`), so no logprob support is needed from the backend.
+</div>
 
-## Use Cases
+---
 
-- **"Is my model accurate enough?"** Run standardized benchmarks (MMLU, HellaSwag) on any model you're serving. Compare Llama vs Mistral vs Gemma on the same tasks.
-- **"Are my prompts actually helping?"** Test whether chain-of-thought, few-shot, or instruction prompts improve or hurt your specific model. (Spoiler: at 8B parameters, simpler prompts win.)
-- **"Can it handle production traffic?"** Load-test your endpoint with concurrent requests. Get P50/P95/P99 latency, TTFT, and throughput numbers before users hit it.
-- **"Why does it give different answers each time?"** Validate determinism with reproducibility checks. Pin down greedy decoding + fixed seed to get consistent outputs.
-- **"Which model should I deploy?"** Run the same eval suite across models and compare accuracy, latency, and throughput side-by-side.
+## The 90 second tour
 
-## Quick Start
+- [The headline finding](#chain-of-thought-made-the-model-worse): every layer of prompt scaffolding made an 8B model less accurate, and self-consistency voting was the only strategy that recovered anything
+- [The part that pays rent](#vote-confidence-is-a-routing-signal): the vote confidence from self-consistency separates the answers you can trust from the ones worth escalating to a bigger model
+- Run the whole pipeline yourself in two commands: `make setup && make ablation`
 
-```bash
-make setup     # venv + deps + pull model
-make serve     # Start Ollama endpoint
-make eval      # MMLU + HellaSwag benchmarks
-make ablation  # Prompt strategy optimization
-make perf      # Load testing + latency analysis
-make validate  # Determinism checks
-```
+## Why the error bars are the point
 
-Override the model: `MODEL=mistral:7b make eval`
+A number without an interval is a claim without a receipt. It cannot tell you whether you measured an effect or got lucky on twenty questions, and at the sample sizes most local eval runs can afford, that difference is the entire story.
+
+So this harness refuses to report an accuracy on its own. Every proportion comes back with a Wilson score interval. Every paired comparison against baseline goes through McNemar's test. Every run is gated behind a determinism check first, because an ablation across prompts means nothing if the same prompt does not return the same answer twice.
+
+That discipline is what produced the honest version of the headline below. Chain-of-thought was the largest effect in the table. It was also, at this sample size, statistically indistinguishable from noise. Both sentences are true, and a harness that prints only the first one is selling you something.
+
+| Guard | The question it answers | What it catches |
+|---|---|---|
+| **Wilson interval** | How precise is this accuracy, really? | A 60% that is actually somewhere between 39% and 78% |
+| **McNemar's test** | Did this strategy beat baseline, or did the same items just shuffle? | A win that came from four items changing hands, not from a better prompt |
+| **Determinism gate** | Would this prompt score the same way twice? | Sampling noise being read as a prompt effect |
+| **SHA-256 prompt cache** | Is the comparison replaying identical calls or re-rolling them? | A rerun that quietly measures a different experiment |
+
+## Chain-of-thought made the model worse
+
+Accuracy decreased monotonically with prompt complexity. Each added layer of instruction degraded performance, and the most sophisticated single-pass strategy was the worst of the five.
+
+| Strategy | Accuracy | 95% CI | vs Baseline |
+|---|---|---|---|
+| Baseline (minimal template) | 60% (12/20) | [0.39, 0.78] | reference |
+| Instruction template | 55% (11/20) | [0.34, 0.74] | -5pp |
+| Chain-of-thought | 35% (7/20) | [0.18, 0.57] | **-25pp** |
+| Few-shot + CoT | 55% (11/20) | [0.34, 0.74] | -5pp |
+| Self-consistency (k=5) | **70% (14/20)** | **[0.48, 0.85]** | **+10pp** |
+
+![Accuracy by prompting strategy, with Wilson 95% confidence intervals](docs/figures/accuracy_by_strategy.png)
+
+At 8B parameters the model pattern-matches commonsense completions well, then reasons itself out of a correct first-pass answer when asked to think step by step. Few-shot examples recovered part of that loss by constraining the output format and capping how far the reasoning wandered.
+
+The honest caveat, stated as loudly as the finding: McNemar's test on the winning strategy against baseline returns p=0.48. At n=20 this is directionally interesting and statistically unproven. The confidence intervals overlap heavily, which is exactly what a 20-item run should look like.
+
+## Vote confidence is a routing signal
+
+Self-consistency was the only strategy that beat baseline: five samples at temperature 0.7, majority vote, +10pp for 5x the latency. On a pure accuracy-per-dollar basis that is a bad trade.
+
+The vote itself is the thing worth keeping. How lopsided the five samples were turns out to predict whether the answer is right:
+
+![Vote confidence against correctness, and accuracy by confidence bucket](docs/figures/confidence_routing.png)
+
+- Confidence at or above 0.8: nearly always correct. Serve it from the small model.
+- Confidence at or below 0.6: close to a coin flip. Escalate to a larger endpoint.
+
+That is a production cascade you can actually build. Run the cheap model with self-consistency, keep the high-confidence answers, and spend the expensive model's budget only on the minority of items where the small model is visibly unsure.
+
+## Performance profile
+
+| Config | TTFT P50 (ms) | Throughput (tok/s) | Concurrency |
+|---|---|---|---|
+| Short, c=1 | ~132 | ~65 | 1 |
+| Short, c=3 | ~596 | ~68 | 3 |
+| Short, c=5 | ~4531 | ~66 | 5 |
+| Long, c=1 | ~190 | ~63 | 1 |
+
+![Time to first token and throughput by batch configuration](docs/figures/latency_throughput.png)
+
+TTFT scales linearly with concurrency while throughput stays flat, which is the signature of a backend that queues rather than batches. Ollama serves requests sequentially, so concurrency buys nothing here. A continuous-batching backend such as vLLM or TGI is the next step for any real load.
+
+TTFT is measured from the first non-empty streamed chunk. Throughput comes from Ollama's own `eval_count / eval_duration`. The first request of each run is excluded as cold-start model load.
 
 ## Architecture
 
@@ -81,139 +129,32 @@ flowchart TD
     DV -.-> PC
 ```
 
-Every (model, prompt, params) call is hashed via `SHA-256(JSON.dumps({"model": m, "prompt": p, **params}, sort_keys=True))` and cached to `.cache/{hash}.json`. Repeated evaluations hit the cache instead of the inference endpoint, which makes ablation runs efficient and results reproducible. Deterministic baselines (temperature=0, top_k=1, fixed seed) are enforced before any comparison.
+Every (model, prompt, params) call is hashed with `SHA-256(JSON.dumps({"model": m, "prompt": p, **params}, sort_keys=True))` and cached to `.cache/{hash}.json`. Repeated evaluations hit the cache instead of the inference endpoint, which is what keeps an ablation affordable and makes a rerun replay the same experiment instead of a new one.
 
-## Key Findings
+## Quick start
 
-### Chain-of-thought hurts at small scale
-
-We found that chain-of-thought prompting **drops accuracy by 25 percentage points** on Llama 3.1 8B. The model gets the right answer with a simple prompt, then reasons itself into the wrong one when asked to think step-by-step.
-
-| Strategy | Accuracy | 95% CI | vs Baseline |
-|---|---|---|---|
-| Baseline (minimal template) | 60% (12/20) | [0.39, 0.78] | – |
-| Instruction template | 50% (10/20) | [0.30, 0.70] | -10pp |
-| Chain-of-thought | 35% (7/20) | [0.18, 0.57] | **-25pp** |
-| Few-shot + CoT | 55% (11/20) | [0.34, 0.74] | -5pp |
-| Self-consistency (k=5) | **70% (14/20)** | **[0.48, 0.85]** | **+10pp** |
-
-95% CIs via Wilson score interval. McNemar's test on self-consistency vs baseline: p=0.48 (not significant at n=20).
-
-![Accuracy by Prompting Strategy](docs/figures/accuracy_by_strategy.png)
-
-Accuracy decreased monotonically with prompt complexity. Each added layer of instruction degraded performance. At 8B parameters, the model pattern-matches commonsense completions effectively, but explicit reasoning chains introduce noise that overrides correct first-pass answers.
-
-Few-shot examples partially recovered CoT losses (35% to 55%) by constraining output format and reasoning depth.
-
-#### Ablation pipeline
-
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
-flowchart TD
-    classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
-    classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
-    classDef purple fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
-
-    T["4 Templates: baseline · instruction · CoT · few-shot + CoT"]:::orange
-    GD["Greedy Decode — temp=0, seed=42"]:::orange
-    BEST["Best Template (highest accuracy)"]:::orange
-    SC["Self-Consistency — k=5, temp=0.7"]:::green
-    MV["Majority Vote — confidence = winner / k"]:::green
-    STAT["Wilson CIs + McNemar's test"]:::purple
-
-    T --> GD --> BEST --> SC --> MV --> STAT
+```bash
+make setup     # venv + deps + pull model
+make serve     # start the Ollama endpoint
+make eval      # MMLU + HellaSwag benchmarks
+make ablation  # prompt strategy ablation
+make perf      # load testing + latency analysis
+make validate  # determinism checks
 ```
 
-### Self-consistency and confidence routing
-
-Self-consistency (5 samples at temperature=0.7, majority vote) was the only strategy that improved accuracy: +10pp over baseline at 5x latency cost.
-
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
-flowchart TD
-    classDef blue fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
-    classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
-    classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
-    classDef purple fill:#f3e8ff,stroke:#9333ea,color:#581c87,stroke-width:2px
-
-    P["Prompt"]:::blue
-    GEN["Generate k=5 samples — seeds 42-46, temp=0.7"]:::blue
-    EXT["Extract Answers — 3-tier regex"]:::orange
-    VOTE["Majority Vote — confidence = winner / k"]:::green
-    HIGH[/"conf >= 0.8 : serve"/]:::green
-    LOW[/"conf <= 0.6 : cascade to larger model"/]:::purple
-
-    P --> GEN --> EXT --> VOTE
-    VOTE --> HIGH
-    VOTE --> LOW
-```
-
-Self-consistency config: `k=5, temperature=0.7, top_p=0.95, top_k=40, seeds=[42,43,44,45,46], max_tokens=128`.
-
-The vote confidence distribution reveals a practical routing signal:
-
-![Vote Confidence as Routing Signal](docs/figures/confidence_routing.png)
-
-- Confidence >= 0.8: nearly always correct. Trust and serve.
-- Confidence <= 0.6: close to random. Cascade to a larger model.
-
-This suggests a production routing strategy: run self-consistency on the small model, and only escalate low-confidence items to a more expensive endpoint.
-
-### Performance profile
-
-| Config | TTFT P50 (ms) | Throughput (tok/s) | Concurrency |
-|---|---|---|---|
-| Short, c=1 | ~132 | ~65 | 1 |
-| Short, c=3 | ~596 | ~68 | 3 |
-| Short, c=5 | ~4531 | ~66 | 5 |
-| Long, c=1 | ~190 | ~63 | 1 |
-
-TTFT measured via streaming first non-empty chunk. Throughput from Ollama's `eval_count / eval_duration`. First request excluded (cold-start model load).
-
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#64748b', 'clusterBkg': '#f8fafc', 'clusterBorder': '#e2e8f0'}}}%%
-flowchart TD
-    classDef blue fill:#dbeafe,stroke:#2563eb,color:#1e3a5f,stroke-width:2px
-    classDef orange fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px
-    classDef green fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
-
-    subgraph pool ["ThreadPoolExecutor"]
-        C1["Thread 1"]:::blue
-        C2["Thread 2"]:::blue
-        C3["Thread 3"]:::blue
-    end
-
-    Q["Ollama Queue — sequential, no batching"]:::orange
-
-    subgraph metrics ["Metrics"]
-        TTFT["TTFT — first non-empty chunk"]:::green
-        TPS["Throughput — eval_count / eval_duration"]:::green
-        AGG["Aggregate — P50 / P95 / P99"]:::green
-    end
-
-    C1 --> Q
-    C2 --> Q
-    C3 --> Q
-    Q --> TTFT
-    Q --> TPS
-    TTFT --> AGG
-    TPS --> AGG
-```
-
-TTFT scales linearly with concurrency because Ollama queues requests sequentially rather than batching. For scaling beyond single-GPU, continuous batching backends (vLLM, TGI) would be the next step.
-
-![Latency and Throughput](docs/figures/latency_throughput.png)
+Point it at a different model with `MODEL=mistral:7b make eval`. Evals run in generative mode (`--model local-chat-completions`), so the backend does not need to expose logprobs. Anything speaking OpenAI-compatible `/v1/chat/completions` works.
 
 ## Methodology
 
-- **Model**: Llama 3.1 8B (Q4_0 quantized, ~4.7 GB) via Ollama
-- **Decoding**: Greedy baseline (temperature=0, top_p=1, top_k=1, seed=42). Self-consistency uses temperature=0.7, top_p=0.95, k=5.
-- **Benchmark**: HellaSwag (commonsense completion), MMLU (knowledge), custom JSON task
-- **Ablation**: 4 prompting strategies tested, then self-consistency on best template, on identical 20-item subset. Answer extraction via regex normalization ("A", "A.", "(A)", "The answer is A").
-- **Statistical tests**: McNemar's test for paired accuracy comparisons. Wilson score confidence intervals for proportions. p=0.48 on the self-consistency vs baseline comparison (not significant at n=20).
+- **Model**: Llama 3.1 8B, Q4_0 quantized, roughly 4.7 GB, served through Ollama
+- **Decoding**: greedy baseline at temperature 0, top_p 1, top_k 1, seed 42. Self-consistency uses temperature 0.7, top_p 0.95, k=5, seeds 42 through 46
+- **Benchmarks**: HellaSwag for commonsense completion, MMLU for knowledge, plus a custom JSON task
+- **Ablation**: four prompting strategies on an identical 20-item subset, then self-consistency applied to the winning template
+- **Answer extraction**: three-tier regex normalizing "A", "A.", "(A)", and "The answer is A"
+- **Statistics**: Wilson score intervals for every proportion, McNemar's test for paired comparisons against baseline
 
 <details>
-<summary>Full decoding parameters and implementation details</summary>
+<summary>Full decoding parameters, harness invocation, and formulas</summary>
 
 ### Decoding parameters
 
@@ -241,90 +182,90 @@ python -m lm_eval \
   --cache_requests true
 ```
 
-### Answer extraction (3-tier regex)
+### Answer extraction, three tiers
 
-1. **Direct letter at start**: `^[(\s]*([A-Da-d])[).\s,:]`
-2. **Keyword pattern**: `(?:answer|choice|option)[\s:]+(?:is\s+)?[(\s]*([A-Da-d])`
-3. **Standalone letter fallback**: `\b([A-Da-d])\b`
+1. Direct letter at start: `^[(\s]*([A-Da-d])[).\s,:]`
+2. Keyword pattern: `(?:answer|choice|option)[\s:]+(?:is\s+)?[(\s]*([A-Da-d])`
+3. Standalone letter fallback: `\b([A-Da-d])\b`
 
 ### Statistical formulas
 
-**Wilson score CI**:
+Wilson score interval:
 
 ```
 center = (p + z^2/2n) / (1 + z^2/n)
 spread = z * sqrt((p(1-p) + z^2/4n) / n) / (1 + z^2/n)
-CI = [center - spread, center + spread]
+CI     = [center - spread, center + spread]
 ```
 
-Where z = 1.96 for 95% confidence, p = observed accuracy, n = sample size.
+with z = 1.96 for 95% confidence, p the observed accuracy, n the sample size.
 
-**McNemar's chi-squared**:
+McNemar's chi-squared with continuity correction:
 
 ```
 chi2 = (|b - c| - 1)^2 / (b + c)
 ```
 
-Where b = items only baseline got right, c = items only improved got right. df=1.
+where b is the count of items only baseline got right, c the count only the challenger got right, df = 1.
 
 </details>
 
-## Limitations & Future Work
+## What this cannot tell you
 
-- **Sample size**: n=20 gives 30-40pp wide confidence intervals (baseline 60%: Wilson CI [0.39, 0.78]). Need 200+ examples for 80% power to detect a 10pp effect. The CoT drop is large enough to be directionally meaningful, but exact magnitudes are uncertain.
-- **Single model size**: At what parameter count does CoT start helping? Testing 13B, 70B, and mixture-of-experts architectures would map the crossover point.
-- **Quantization**: All results are on Q4_0 quantized weights (4-bit, ~4.7 GB). Full-precision comparison would isolate whether quantization interacts with prompting strategy.
-- **Task coverage**: Ablation was HellaSwag only. CoT may perform differently on coding, math, or multi-step reasoning tasks where explicit reasoning is more structurally useful.
-- **Backend**: Ollama's sequential queuing limits concurrency insights. Benchmarking against vLLM or TGI with continuous batching would give a more realistic production performance profile.
+Stated plainly, because an eval harness that hides its own limits is the thing it was built to prevent.
 
-## Takeaways
+- **Sample size.** n=20 produces confidence intervals 30 to 40 points wide. Detecting a 10pp effect at 80% power needs roughly 200 items. The chain-of-thought drop is large enough to be worth chasing; its exact magnitude is not established.
+- **One model, one size.** Every number here is Llama 3.1 8B. The interesting open question is where the crossover sits, since chain-of-thought is known to help at larger scales. Mapping that needs 13B, 70B, and a mixture-of-experts model on the same harness.
+- **Quantization is uncontrolled.** All results are on Q4_0 weights. Whether 4-bit quantization interacts with prompting strategy is untested here.
+- **One task family.** The ablation ran on HellaSwag only. Chain-of-thought plausibly behaves differently on math, coding, and multi-step reasoning, where the reasoning chain is structurally load-bearing rather than decorative.
+- **Backend ceiling.** Ollama's sequential queue means the concurrency numbers describe Ollama, not the model. Real serving characteristics need a batching backend.
 
-1. Simpler prompts outperform complex ones at 8B scale. Each added layer of instruction degraded accuracy.
-2. Self-consistency's vote confidence is a useful routing signal: high-confidence items can be trusted, low-confidence items should cascade to a larger model.
-3. n=20 gives 30-40pp wide confidence intervals. Need 200+ for meaningful significance tests.
-4. Deterministic baselines (greedy + fixed seed) are a prerequisite for valid ablations.
-
-## Project Structure
+## Project structure
 
 ```
 self-hosted-llm-evals-lab/
-├── Makefile                    # All commands
+├── Makefile                    # every command in this README
 ├── README.md
 ├── LICENSE
 ├── CONTRIBUTING.md
 ├── requirements.txt
 │
-├── serve/                      # Inference server management
+├── assets/
+│   └── hero.svg
+│
+├── serve/                      # inference server management
 │   ├── serve.py                # Ollama lifecycle manager
-│   └── client.py               # Sample generation client
+│   └── client.py               # sample generation client
 │
-├── eval_runner/                # Benchmark evaluation
-│   ├── model.py                # Model wrapper + SHA-256 prompt cache
+├── eval_runner/                # benchmark evaluation
+│   ├── model.py                # model wrapper + SHA-256 prompt cache
 │   ├── run_eval.py             # lm-eval-harness runner
-│   └── custom_task/            # Custom JSON benchmark definitions
+│   └── custom_task/            # custom JSON benchmark definitions
 │
-├── perf/                       # Load testing
-│   ├── load_test.py            # Concurrent load generator
-│   ├── metrics.csv             # Raw metrics output
-│   └── analysis.ipynb          # Visualization notebook
+├── ablation/                   # prompt strategy optimization
+│   ├── prepare_data.py         # few-shot + template preparation
+│   ├── optimize_prompt.py      # ablation across strategies
+│   ├── infer.py                # comparison + statistical tests
+│   ├── eval.sh                 # full pipeline
+│   ├── results/                # ablation output, source of the figures
+│   └── report.md               # detailed results + analysis
 │
-├── validate/                   # Determinism verification
+├── perf/                       # load testing
+│   ├── load_test.py            # concurrent load generator
+│   ├── metrics.csv             # raw metrics output
+│   └── analysis.ipynb          # visualization notebook
+│
+├── validate/                   # determinism verification
 │   ├── validate.py             # N-trial consistency + output validators
-│   └── README.md               # Testing methodology
-│
-├── ablation/                   # Prompt strategy optimization
-│   ├── prepare_data.py         # Few-shot + template preparation
-│   ├── optimize_prompt.py      # Ablation across strategies
-│   ├── infer.py                # Comparison + statistical tests
-│   ├── eval.sh                 # Full pipeline script
-│   └── report.md               # Detailed results + analysis
+│   └── README.md               # testing methodology
 │
 └── docs/
-    ├── REPORT.md               # Extended research report
-    ├── architecture.md         # System design
-    └── figures/                # Chart exports
+    ├── REPORT.md               # extended research report
+    ├── architecture.md         # system design
+    ├── generate_figures.py     # regenerates every figure from raw results
+    └── figures/                # chart exports
 ```
 
 ## License
 
-Apache-2.0
+Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

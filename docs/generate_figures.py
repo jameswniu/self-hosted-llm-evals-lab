@@ -15,6 +15,14 @@ FIGURES_DIR = os.path.join(REPO_ROOT, "docs", "figures")
 ABLATION_PATH = os.path.join(REPO_ROOT, "ablation", "results", "ablation_results.json")
 METRICS_PATH = os.path.join(REPO_ROOT, "perf", "metrics.csv")
 
+# Colorblind-safe palette that reads on both GitHub light and dark themes.
+# Figures are saved transparent, so nothing here may rely on a white or
+# black background to read correctly.
+BLUE = "#3987e5"    # neutral / non-highlighted series
+ORANGE = "#d95926"  # degradation case (e.g. chain-of-thought)
+AQUA = "#199e70"    # winning case (e.g. self-consistency)
+INK = "#6b7683"     # axis text, tick labels, titles, spines, gridlines
+
 
 def wilson_ci(p, n, z=1.96):
     """Wilson score 95% confidence interval for a proportion."""
@@ -22,6 +30,22 @@ def wilson_ci(p, n, z=1.96):
     centre = (p + z**2 / (2 * n)) / denom
     spread = z * np.sqrt((p * (1 - p) + z**2 / (4 * n)) / n) / denom
     return centre - spread, centre + spread
+
+
+def style_axes(ax):
+    """Shared dual-theme styling: transparent background, INK text/spines,
+    a recessive y-only grid. Called on every Axes right before sns.despine."""
+    ax.set_facecolor("none")
+    ax.patch.set_alpha(0)
+    ax.grid(False)
+    ax.grid(True, axis="y", color=INK, alpha=0.18, linewidth=0.8)
+    ax.set_axisbelow(True)
+    for spine in ax.spines.values():
+        spine.set_color(INK)
+    ax.tick_params(colors=INK, labelcolor=INK)
+    ax.title.set_color(INK)
+    ax.xaxis.label.set_color(INK)
+    ax.yaxis.label.set_color(INK)
 
 
 # -- Figure 1: accuracy_by_strategy.png ----------------------------------------
@@ -48,27 +72,30 @@ def fig_accuracy_by_strategy(data):
     colors = []
     for i in range(len(accs)):
         if i == best_idx:
-            colors.append("#2ecc71")
+            colors.append(AQUA)
         elif i == worst_idx:
-            colors.append("#e74c3c")
+            colors.append(ORANGE)
         else:
-            colors.append("#3498db")
+            colors.append(BLUE)
 
     fig, ax = plt.subplots(figsize=(8, 4.5))
-    bars = ax.bar(names, accs, color=colors, edgecolor="white", linewidth=0.8)
-    ax.errorbar(names, accs, yerr=[err_lo, err_hi], fmt="none", ecolor="black",
-                capsize=4, linewidth=1.2)
+    fig.patch.set_alpha(0)
+    bars = ax.bar(names, accs, color=colors, edgecolor="none", linewidth=0.8, zorder=2)
+    ax.errorbar(names, accs, yerr=[err_lo, err_hi], fmt="none", ecolor=INK,
+                capsize=4, linewidth=1.2, zorder=3)
     for bar, acc in zip(bars, accs):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.03,
-                f"{acc:.0%}", ha="center", va="bottom", fontweight="bold", fontsize=10)
+                f"{acc:.0%}", ha="center", va="bottom", fontweight="bold", fontsize=10,
+                color=INK)
     ax.set_ylabel("Accuracy")
     ax.set_title("Accuracy by Prompting Strategy (n=20, Wilson 95% CI)")
     ax.set_ylim(0, 1.0)
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f"{y:.0%}"))
     ax.tick_params(axis="x", rotation=15)
-    sns.despine()
+    style_axes(ax)
+    sns.despine(ax=ax)
     fig.tight_layout()
-    fig.savefig(os.path.join(FIGURES_DIR, "accuracy_by_strategy.png"), dpi=150)
+    fig.savefig(os.path.join(FIGURES_DIR, "accuracy_by_strategy.png"), dpi=150, transparent=True)
     plt.close(fig)
     print("  accuracy_by_strategy.png")
 
@@ -95,36 +122,39 @@ def fig_confidence_routing(data):
     bucket_ns = [len(v) for v in buckets.values()]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.5), gridspec_kw={"width_ratios": [3, 2]})
+    fig.patch.set_alpha(0)
 
     # Left: strip plot of confidence vs correctness
     jitter = np.random.RandomState(42).uniform(-0.08, 0.08, len(conf))
-    colors_strip = ["#2ecc71" if c else "#e74c3c" for c in correct]
+    colors_strip = [AQUA if c else ORANGE for c in correct]
     x_pos = [1 if c else 0 for c in correct]
     ax1.scatter([x + j for x, j in zip(x_pos, jitter)], conf, c=colors_strip,
-                s=80, alpha=0.8, edgecolors="white", linewidth=0.5)
+                s=80, alpha=0.8, edgecolors="none", linewidth=0.5, zorder=2)
     ax1.set_xticks([0, 1])
     ax1.set_xticklabels(["Incorrect", "Correct"])
     ax1.set_ylabel("Vote Confidence")
     ax1.set_title("Confidence vs Correctness")
     ax1.set_ylim(0.3, 1.1)
-    ax1.axhline(0.8, color="gray", linestyle="--", linewidth=0.8, alpha=0.6)
-    ax1.text(1.05, 0.8, "threshold", fontsize=8, color="gray", va="center")
+    ax1.axhline(0.8, color=INK, linestyle="dashed", linewidth=0.8, alpha=0.6)
+    ax1.text(1.05, 0.8, "threshold", fontsize=8, color=INK, va="center")
 
     # Right: accuracy by confidence bucket
-    bar_colors = ["#e74c3c", "#f39c12", "#2ecc71"]
-    bars = ax2.bar(bucket_names, bucket_accs, color=bar_colors, edgecolor="white", linewidth=0.8)
+    bar_colors = [ORANGE, BLUE, AQUA]
+    bars = ax2.bar(bucket_names, bucket_accs, color=bar_colors, edgecolor="none", linewidth=0.8, zorder=2)
     for bar, acc, n in zip(bars, bucket_accs, bucket_ns):
         ax2.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.03,
-                 f"{acc:.0%}\n(n={n})", ha="center", va="bottom", fontsize=9)
+                 f"{acc:.0%}\n(n={n})", ha="center", va="bottom", fontsize=9, color=INK)
     ax2.set_ylabel("Accuracy")
     ax2.set_xlabel("Vote Confidence")
     ax2.set_title("Accuracy by Confidence Bucket")
     ax2.set_ylim(0, 1.2)
     ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f"{y:.0%}"))
+    style_axes(ax1)
+    style_axes(ax2)
     sns.despine(ax=ax1)
     sns.despine(ax=ax2)
     fig.tight_layout()
-    fig.savefig(os.path.join(FIGURES_DIR, "confidence_routing.png"), dpi=150)
+    fig.savefig(os.path.join(FIGURES_DIR, "confidence_routing.png"), dpi=150, transparent=True)
     plt.close(fig)
     print("  confidence_routing.png")
 
@@ -138,11 +168,17 @@ def fig_latency_throughput(metrics_path):
     df = df.iloc[1:]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
+    fig.patch.set_alpha(0)
 
     # Left: TTFT boxplot by batch_label
     order = sorted(df["batch_label"].unique())
     sns.boxplot(data=df, x="batch_label", y="ttft_ms", hue="batch_label", order=order, ax=ax1,
-                palette="Blues_d", fliersize=3, legend=False)
+                fliersize=3, legend=False,
+                boxprops=dict(facecolor=BLUE, edgecolor=INK, linewidth=0.8),
+                whiskerprops=dict(color=INK, linewidth=0.8),
+                capprops=dict(color=INK, linewidth=0.8),
+                medianprops=dict(color=INK, linewidth=1.2),
+                flierprops=dict(markerfacecolor=INK, markeredgecolor=INK, markersize=3))
     ax1.set_xlabel("Batch Configuration")
     ax1.set_ylabel("TTFT (ms)")
     ax1.set_title("Time to First Token by Configuration")
@@ -150,19 +186,20 @@ def fig_latency_throughput(metrics_path):
 
     # Right: throughput barplot by batch_label
     throughput = df.groupby("batch_label")["tokens_per_sec"].mean().reindex(order)
-    ax2.bar(order, throughput.values, color=sns.color_palette("Blues_d", len(order)),
-            edgecolor="white", linewidth=0.8)
+    ax2.bar(order, throughput.values, color=BLUE, edgecolor="none", linewidth=0.8, zorder=2)
     for i, (lbl, val) in enumerate(zip(order, throughput.values)):
-        ax2.text(i, val + 1, f"{val:.1f}", ha="center", va="bottom", fontsize=8)
+        ax2.text(i, val + 1, f"{val:.1f}", ha="center", va="bottom", fontsize=8, color=INK)
     ax2.set_xlabel("Batch Configuration")
     ax2.set_ylabel("Throughput (tok/s)")
     ax2.set_title("Mean Throughput by Configuration")
     ax2.tick_params(axis="x", rotation=30)
 
+    style_axes(ax1)
+    style_axes(ax2)
     sns.despine(ax=ax1)
     sns.despine(ax=ax2)
     fig.tight_layout()
-    fig.savefig(os.path.join(FIGURES_DIR, "latency_throughput.png"), dpi=150)
+    fig.savefig(os.path.join(FIGURES_DIR, "latency_throughput.png"), dpi=150, transparent=True)
     plt.close(fig)
     print("  latency_throughput.png")
 
@@ -171,7 +208,8 @@ def fig_latency_throughput(metrics_path):
 
 def main():
     os.makedirs(FIGURES_DIR, exist_ok=True)
-    plt.style.use("seaborn-v0_8-whitegrid")
+    # No seaborn whitegrid default background: figures are transparent and
+    # each Axes gets its own recessive INK gridline via style_axes() instead.
 
     print("Generating figures...")
 
