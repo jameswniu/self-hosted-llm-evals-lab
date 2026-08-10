@@ -75,21 +75,30 @@ def extract_answer(response: str) -> Optional[int]:
     """
     text = response.strip()
 
-    # Direct letter at start
-    match = re.match(r"^[(\s]*([A-Da-d])[).\s,:]", text)
+    # Tier 1: the whole response is the choice, e.g. "C", "(B)", "A."
+    match = re.match(r"^\(?([A-Da-d])\)?[.,:]?\s*$", text)
     if match:
         return ANSWER_MAP.get(match.group(1))
 
-    # "Answer: X" or "answer is X"
-    match = re.search(r"(?:answer|choice|option)[\s:]+(?:is\s+)?[(\s]*([A-Da-d])", text, re.I)
+    # Tier 2: an explicitly stated answer, e.g. "the answer is D", "Answer: C".
+    # This runs before any positional heuristic on purpose. "A lot of people
+    # think the answer is C" starts with the article "A" and ends with the real
+    # answer; whatever the model states beats wherever a letter happens to sit.
+    match = re.search(r"(?:answer|choice|option)[\s:]+(?:is\s+)?[(\s]*([A-Da-d])\b", text, re.I)
     if match:
         return ANSWER_MAP.get(match.group(1))
 
-    # Standalone letter
-    match = re.search(r"\b([A-Da-d])\b", text)
+    # Tier 3: a leading choice followed by punctuation, e.g. "B) because ...".
+    # Whitespace is deliberately NOT a delimiter here. Accepting "A " as a choice
+    # is what lets the English article be read as an answer, which is the exact
+    # bug that made a graded run score below chance.
+    match = re.match(r"^\(?([A-Da-d])(?:\)|[.,:])", text)
     if match:
         return ANSWER_MAP.get(match.group(1))
 
+    # No blind single-letter fallback. A response that never names a choice is
+    # "no answer", which is a different outcome from a wrong answer and has to
+    # stay distinguishable in the metrics.
     return None
 
 

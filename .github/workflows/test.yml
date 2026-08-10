@@ -1,0 +1,50 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        # Deliberately not requirements.txt: nothing here talks to a model, so
+        # the suite stays fast and needs no served endpoint.
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest requests numpy scipy
+
+      - name: Run tests
+        run: pytest tests/ -q
+
+      - name: Figures must still match the results files
+        # The README's numbers are generated, not typed. If someone edits the
+        # data without regenerating, or hand-edits a figure, this fails.
+        run: |
+          python docs/generate_figures.py
+          python docs/generate_diagrams.py
+          git diff --exit-code -- docs/figures assets
+
+      - name: Every SVG must be well-formed XML
+        run: |
+          python - <<'PY'
+          import glob, sys, xml.etree.ElementTree as ET
+          bad = []
+          for f in glob.glob("assets/*.svg") + glob.glob("docs/figures/*.svg"):
+              try:
+                  ET.parse(f)
+              except ET.ParseError as e:
+                  bad.append(f"{f}: {e}")
+          if bad:
+              print("\n".join(bad)); sys.exit(1)
+          print(f"all SVGs parse")
+          PY

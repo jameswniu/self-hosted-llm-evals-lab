@@ -8,6 +8,7 @@
 
 <br/>
 
+<a href="https://github.com/jameswniu/self-hosted-llm-evals-lab/actions/workflows/test.yml"><img alt="tests" src="https://github.com/jameswniu/self-hosted-llm-evals-lab/actions/workflows/test.yml/badge.svg?branch=main"></a>
 <img alt="python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-dfe3e0?style=flat-square&labelColor=0c1013">
 <img alt="harness lm-eval v0.4+" src="https://img.shields.io/badge/harness-lm--eval_v0.4%2B-8f9491?style=flat-square&labelColor=0c1013">
 <img alt="model llama 3.1 8B Q4_0" src="https://img.shields.io/badge/model-llama_3.1_8B_Q4__0-8f9491?style=flat-square&labelColor=0c1013">
@@ -255,7 +256,7 @@ Point it at a different model with `MODEL=mistral:7b make eval`. Evals run in ge
 - **Decoding**: greedy baseline at temperature 0, top_p 1, top_k 1, seed 42. Self-consistency uses temperature 0.7, top_p 0.95, k=5, seeds 42 through 46
 - **Benchmarks**: HellaSwag for commonsense completion, MMLU for knowledge, plus a custom JSON task
 - **Ablation**: four prompting strategies on an identical 20-item subset, then self-consistency applied to the winning template
-- **Answer extraction**: three-tier regex normalizing "A", "A.", "(A)", and "The answer is A"
+- **Answer extraction**: three tiers, tried in order: the whole response is the choice, an explicitly stated answer ("the answer is D"), then a leading choice followed by punctuation. Whitespace is not a delimiter and there is no blind single-letter fallback, so prose beginning with the article "A" is not read as choice A and a response naming no choice returns no answer rather than a guess
 - **Statistics**: Wilson score intervals for every proportion, McNemar's test for paired comparisons against baseline
 
 <details>
