@@ -60,7 +60,7 @@ Every single-pass strategy scored below the minimal baseline, and chain-of-thoug
 <details>
 <summary>Mermaid source for this pipeline</summary>
 
-```mermaid
+```mmd
 flowchart LR
     T["4 templates<br/>baseline, instruction, CoT, few-shot + CoT"]
     G["greedy decode<br/>temp 0, top_k 1, seed 42"]
@@ -98,7 +98,7 @@ Self-consistency was the only strategy that beat baseline: five samples at tempe
 <details>
 <summary>Mermaid source for this cascade</summary>
 
-```mermaid
+```mmd
 flowchart LR
     P["prompt, one item"] --> GEN["generate k=5<br/>temp 0.7, top_p 0.95, seeds 42 to 46"]
     GEN --> EX["extract answers<br/>3-tier regex: A, A., (A), answer is A"]
@@ -146,7 +146,7 @@ Four Makefile targets, four independent pipelines, one served model. The detail 
 <details>
 <summary>Mermaid source for this diagram</summary>
 
-```mermaid
+```mmd
 flowchart TD
     subgraph targets["Makefile targets"]
         T1["make eval"]
@@ -165,8 +165,7 @@ flowchart TD
     API1 --> OL[("Ollama, llama3.1:8b Q4_0, port 11434")]
     API2 --> OL
     SERVE["serve/serve.py, make serve"] -.manages.-> OL
-    WRAP["eval_runner/model.py<br/>OllamaEvalModel + SHA-256 PromptCache<br/>NOT on any Makefile path"]
-    WRAP -.not wired in.-> API2
+    WRAP["eval_runner/model.py: OllamaEvalModel + SHA-256 PromptCache.<br/>No module imports it and no Makefile target runs it,<br/>so it has no edge into anything above."]
 ```
 
 </details>
