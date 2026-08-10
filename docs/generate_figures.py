@@ -134,13 +134,88 @@ def fig_latency(rows):
     return s + "</svg>\n"
 
 
+
+def _grading_audit():
+    """Re-derive the grading failure straight from the logged harness samples."""
+    import glob, re
+    files = sorted(glob.glob(os.path.join(
+        ROOT, "eval_runner", "results", "llama3.1__8b",
+        "samples_mmlu_*_generative_2026-03-04T21-56-26*.jsonl")))
+    stated = re.compile(r"answer is\s*:?\s*\(?([A-D])\b")
+    tot = right_but_zero = letter = noop = falsepos = 0
+    for f in files:
+        for line in open(f):
+            r = json.loads(line)
+            tot += 1
+            raw = r.get("resps")
+            while isinstance(raw, list) and raw:
+                raw = raw[0]
+            raw = str(raw)
+            tgt = str(r.get("target")).strip()
+            fv = r.get("filtered_resps")
+            fv = fv[0] if isinstance(fv, list) and fv else str(fv)
+            if fv == raw:
+                noop += 1
+            m = stated.search(raw)
+            if m:
+                letter += 1
+                if m.group(1) == tgt and float(r.get("exact_match", 0)) == 0.0:
+                    right_but_zero += 1
+            g = re.search(r"([A-D])", raw)
+            if g and (not m or g.group(1) != m.group(1)):
+                falsepos += 1
+    return dict(total=tot, stated_letter=letter, no_letter=tot - letter,
+                right_but_zero=right_but_zero, filter_noop=noop, regex_falsepos=falsepos)
+
+
+def fig_grading(audit):
+    H = 520
+    tot = audit["total"]
+    right = audit["right_but_zero"]
+    other_letter = audit["stated_letter"] - right
+    none = audit["no_letter"]
+    s = head(H, "f4", "Breakdown of a 2850-item MMLU run showing that half the items stated the correct letter yet were graded zero")
+    s += title_block("f4", "GRADING FAILURE", "The harness reported 0.2% on a model answering far better")
+
+    x0, x1, y = 36, 864, 150
+    segs = [(right, AQUA, "stated the CORRECT letter,", "graded zero"),
+            (other_letter, BLUE, "stated a letter,", "wrong or unparsed"),
+            (none, ORANGE, "emitted no letter", "at all")]
+    cur = x0
+    for n, col, l1, l2 in segs:
+        w = (x1 - x0) * n / tot
+        s += f'<rect x="{cur:.1f}" y="{y}" width="{w-3:.1f}" height="58" fill="{col}" rx="4"/>\n'
+        s += txt(cur + w / 2, y + 36, f"{n / tot:.0%}", 22, "#0c1013", weight="700", mono=False)
+        s += txt(cur + w / 2, y + 84, l1, 15, INK3)
+        s += txt(cur + w / 2, y + 104, l2, 15, MUTE)
+        s += txt(cur + w / 2, y + 128, f"{n:,} items", 14, FAINT)
+        cur += w
+    s += txt(x0, y - 18, f"all {tot:,} scored items in one MMLU generative run", 15, INK3, anchor="start")
+
+    by = 330
+    s += txt(x0, by - 14, "what the run reported, against what the model actually produced", 15, INK3, anchor="start")
+    for i, (lab, val, col) in enumerate([("reported by the harness", 0.002, ORANGE),
+                                         ("stated the correct letter", right / tot, AQUA)]):
+        yy = by + i * 46
+        w = max((x1 - x0 - 260) * val, 3)
+        s += txt(x0 + 244, yy + 26, lab, 15, INK3, anchor="end")
+        s += f'<rect x="{x0+256}" y="{yy+8}" width="{w:.1f}" height="26" fill="{col}" rx="3"/>\n'
+        s += txt(x0 + 256 + w + 12, yy + 27, f"{val:.1%}", 17, INK, anchor="start", weight="700")
+
+    s += caption([f"The extraction filter was a no-op on {audit['filter_noop']:,} of {tot:,} items, so a full sentence was compared against a single",
+                  f"letter and could never match. Where the filter did fire, its ([A-D]) pattern grabbed a capital from ordinary prose on",
+                  f"{audit['regex_falsepos']:,} items. Random guessing on four options scores 25%, so 0.2% was never a model result."], 452)
+    return s + "</svg>\n"
+
+
 def main():
     os.makedirs(FIG, exist_ok=True)
     data = json.load(open(ABLATION))
     rows = list(csv.DictReader(open(METRICS)))
     for name, svg in [("accuracy_by_strategy", fig_accuracy(data)),
                       ("confidence_routing", fig_confidence(data)),
-                      ("latency_throughput", fig_latency(rows))]:
+                      ("latency_throughput", fig_latency(rows)),
+                      ("grading_failure", fig_grading(_grading_audit()))]:
         p = os.path.join(FIG, f"{name}.svg")
         open(p, "w").write(svg)
         print(f"  docs/figures/{name}.svg  {os.path.getsize(p):,} bytes")

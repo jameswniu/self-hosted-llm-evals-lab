@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520" role="img" aria-label="Breakdown of a 2850-item MMLU run showing that half the items stated the correct letter yet were graded zero" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
+<defs>
+  <linearGradient id="bgf4" x1="0" y1="0" x2="0.75" y2="1">
+    <stop offset="0" stop-color="#12161c"/><stop offset="0.55" stop-color="#0c1013"/><stop offset="1" stop-color="#080a0d"/>
+  </linearGradient>
+  <pattern id="dotf4" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.7" fill="#161d26"/></pattern>
+  <linearGradient id="ndf4" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#19212b"/><stop offset="1" stop-color="#111820"/>
+  </linearGradient>
+  <linearGradient id="rlf4" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#3987e5" stop-opacity="0.95"/><stop offset="1" stop-color="#3987e5" stop-opacity="0"/>
+  </linearGradient>
+  <marker id="arf4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#5a6673"/></marker>
+  <marker id="argf4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#199e70"/></marker>
+  <marker id="arof4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d95926"/></marker>
+  <marker id="arbf4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3987e5"/></marker>
+</defs>
+<rect x="0" y="0" width="900" height="520" fill="url(#bgf4)"/>
+<rect x="0" y="0" width="900" height="520" fill="url(#dotf4)"/>
+<text x="36" y="42" fill="#3987e5" font-size="15" font-weight="700" letter-spacing="3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GRADING FAILURE</text>
+<text x="36" y="78" fill="#f3f6f9" font-size="25" font-weight="700">The harness reported 0.2% on a model answering far better</text>
+<rect x="36" y="92" width="130" height="2.5" fill="url(#rlf4)"/>
+<rect x="36.0" y="150" width="421.7" height="58" fill="#199e70" rx="4"/>
+<text x="248.37473684210525" y="186" fill="#0c1013" font-size="22" text-anchor="middle" font-weight="700" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">51%</text>
+<text x="248.37473684210525" y="234" fill="#9aa5b1" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">stated the CORRECT letter,</text>
+<text x="248.37473684210525" y="254" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">graded zero</text>
+<text x="248.37473684210525" y="278" fill="#5c6773" font-size="14" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">1,462 items</text>
+<rect x="460.7" y="150" width="141.7" height="58" fill="#3987e5" rx="4"/>
+<text x="533.0905263157895" y="186" fill="#0c1013" font-size="22" text-anchor="middle" font-weight="700" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">17%</text>
+<text x="533.0905263157895" y="234" fill="#9aa5b1" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">stated a letter,</text>
+<text x="533.0905263157895" y="254" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">wrong or unparsed</text>
+<text x="533.0905263157895" y="278" fill="#5c6773" font-size="14" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">498 items</text>
+<rect x="605.4" y="150" width="255.6" height="58" fill="#d95926" rx="4"/>
+<text x="734.7157894736843" y="186" fill="#0c1013" font-size="22" text-anchor="middle" font-weight="700" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">31%</text>
+<text x="734.7157894736843" y="234" fill="#9aa5b1" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">emitted no letter</text>
+<text x="734.7157894736843" y="254" fill="#7d8896" font-size="15" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">at all</text>
+<text x="734.7157894736843" y="278" fill="#5c6773" font-size="14" text-anchor="middle" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">890 items</text>
+<text x="36" y="132" fill="#9aa5b1" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">all 2,850 scored items in one MMLU generative run</text>
+<text x="36" y="316" fill="#9aa5b1" font-size="15" text-anchor="start" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">what the run reported, against what the model actually produced</text>
+<text x="280" y="356" fill="#9aa5b1" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">reported by the harness</text>
+<rect x="292" y="338" width="3.0" height="26" fill="#d95926" rx="3"/>
+<text x="307" y="357" fill="#f3f6f9" font-size="17" text-anchor="start" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">0.2%</text>
+<text x="280" y="402" fill="#9aa5b1" font-size="15" text-anchor="end" font-weight="400" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">stated the correct letter</text>
+<rect x="292" y="384" width="291.4" height="26" fill="#199e70" rx="3"/>
+<text x="595.3740350877192" y="403" fill="#f3f6f9" font-size="17" text-anchor="start" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">51.3%</text>
+<text x="36" y="452" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">The extraction filter was a no-op on 2,840 of 2,850 items, so a full sentence was compared against a single</text>
+<text x="36" y="474" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">letter and could never match. Where the filter did fire, its ([A-D]) pattern grabbed a capital from ordinary prose on</text>
+<text x="36" y="496" fill="#7d8896" font-size="15" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">261 items. Random guessing on four options scores 25%, so 0.2% was never a model result.</text>
+</svg>

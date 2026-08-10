@@ -33,6 +33,7 @@ It is that the same harness says, in the same breath, that n=20 is not enough to
 
 - [The headline finding](#chain-of-thought-made-the-model-worse): every layer of prompt scaffolding made an 8B model less accurate, and self-consistency voting was the only strategy that recovered anything
 - [The part that pays rent](#vote-confidence-is-a-routing-signal): the vote confidence from self-consistency separates the answers you can trust from the ones worth escalating to a bigger model
+- [The bug worth reading first](#the-harness-reported-02-the-model-was-answering-far-better): a zero-shot MMLU run scored 0.2%, which is below chance and therefore impossible. Three stacked grading defects, quantified from the logged samples
 - Run the whole pipeline yourself in two commands: `make setup && make ablation`
 
 ## Why the error bars are the point
@@ -48,6 +49,68 @@ That discipline is what produced the honest version of the headline below. Chain
 | **Wilson interval** | How precise is this accuracy, really? | A 60% that is actually somewhere between 39% and 78% |
 | **McNemar's test** | Did this strategy beat baseline, or did the same items just shuffle? | A win that came from four items changing hands, not from a better prompt |
 | **Determinism check** | Would this prompt score the same way twice? | Sampling noise being read as a prompt effect. Run it with `make validate`; it is a separate target, not yet a prerequisite of `make ablation` |
+
+## The harness reported 0.2%. The model was answering far better.
+
+The most useful thing this repo produced is not a prompting result. It is a grading bug that made a competent model look broken, and the habit that caught it: read the number, ask whether it is even possible, and go to the logged samples before believing it.
+
+A zero-shot MMLU run over 2,850 items returned `exact_match = 0.0021`. Random guessing across four options scores 25%. Anything far below chance is not a measurement of the model, it is a defect in the pipeline.
+
+<p align="center">
+  <img src="docs/figures/grading_failure.svg" alt="Breakdown of a 2850-item MMLU run: 51% of items stated the correct letter yet were graded zero, 17% stated a letter that was wrong or unparsed, and 31% emitted no letter at all" width="100%">
+</p>
+
+Three defects were stacked on top of each other.
+
+**The extraction filter never ran.** On 2,840 of 2,850 items `filtered_resps` came back byte-identical to the raw response, so `exact_match` compared a full sentence against a single letter and could never match:
+
+```text
+target           "D"
+filtered_resps   "The correct answer is D. Many believed that the new scientific
+                  discoveries justified a more tolerant and objective approach ..."
+exact_match      0.0
+```
+
+The model answered correctly. The grader had no way to say so.
+
+**Where the filter did fire, the pattern manufactures answers.** It is `([A-D])` with `group_select: 0`, which takes the first uppercase A through D anywhere in the string. Written English is full of those:
+
+```text
+"A nice abstract algebra question!"   ->  extracts "A"   (target was "B")
+"Based on the passage, ..."           ->  extracts "B"   (from the word "Based")
+```
+
+This is worse than a miss. The harness invents an answer the model never gave and then grades it, which turns a blank into a confident-looking wrong response. It fires on 261 items.
+
+**A third of responses never name a choice.** 890 items (31%) ended without a letter, most often by echoing the prompt's own trailing `The correct answer is:` and stopping. The prompt ends on a phrase the model can satisfy by repeating it, and `until: "\n\n"` lets generation stop before it commits to anything.
+
+Scored by what the model actually said, 1,462 of 2,850 items (51%) named the correct letter. That is a believable zero-shot generative score for a Q4_0 Llama 3.1 8B, and it is more than 200 times what the harness printed.
+
+### What this changes about how the rest of this repo is built
+
+Every accuracy on this page is an answer-extraction result before it is a model result. That is the reason the ablation uses a three-tier extractor with an explicit fallback ladder rather than one regex, the reason each tier is written down in the methodology below, and the reason the self-consistency vote counts extracted answers instead of raw strings.
+
+Four fixes, in the order I would apply them:
+
+1. **Fail loudly when a filter is a no-op.** If `filtered_resps == resps` for most of a run, the extraction stage did nothing and the score is meaningless. That is one assertion, and it would have caught this on the first run.
+2. **Anchor the pattern instead of scanning.** `([A-D])\b` anywhere in a sentence is a bug. Match on a stated-answer phrase, or on a letter at the start of the response, and treat a bare capital inside prose as no answer.
+3. **Score "no answer" as its own class.** Folding a refusal, a truncation, and a wrong answer into the same zero hides which one you have, and they have completely different fixes: prompt, stop sequence, and model respectively.
+4. **Put a floor check on the metric.** A multiple-choice benchmark reporting below chance should refuse to publish the number without flagging it. Chance is a known constant; comparing against it is free.
+
+## Why the benchmarks run in generative mode
+
+Standard HellaSwag and MMLU in lm-eval-harness are loglikelihood tasks: the harness scores each candidate continuation by its logprob and takes the argmax, so the model never writes an answer. Chat-completion endpoints, including the Ollama surface used here, do not expose logprobs, so those tasks cannot run as written.
+
+The three task definitions in `eval_runner/custom_task/` convert them to `generate_until`, which means the model is asked to emit a letter and the harness has to parse it back out. That conversion is what created the parsing surface described above, and it is worth being explicit about what it changes:
+
+| | loglikelihood scoring | generative scoring (used here) |
+|---|---|---|
+| What is measured | which continuation the model assigns highest probability | what the model actually writes when asked |
+| Failure modes | none in parsing; the choice set is closed | truncation, refusals, format drift, extraction bugs |
+| Comparability | matches published leaderboard numbers | not comparable to published MMLU or HellaSwag figures |
+| Why use it | the default when logprobs are available | the only option against a chat endpoint |
+
+The practical consequence: **no number in this repo should be compared against a published MMLU or HellaSwag score.** Different scoring regime, different prompt, zero-shot rather than the usual 5-shot, and 4-bit weights. It is a valid instrument for comparing prompts against each other on one model, which is what the ablation uses it for, and an invalid one for ranking this model against a leaderboard.
 
 ## Chain-of-thought made the model worse
 
@@ -286,7 +349,8 @@ self-hosted-llm-evals-lab/
 ├── eval_runner/                # benchmark evaluation
 │   ├── model.py                # model wrapper + SHA-256 prompt cache
 │   ├── run_eval.py             # lm-eval-harness runner
-│   └── custom_task/            # custom JSON benchmark definitions
+│   └── custom_task/            # generative task defs: the logprob-free MMLU,
+│                               # HellaSwag, and custom JSON benchmarks
 │
 ├── ablation/                   # prompt strategy optimization
 │   ├── prepare_data.py         # few-shot + template preparation
