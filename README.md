@@ -9,6 +9,7 @@
 <br/>
 
 <a href="https://github.com/jameswniu/self-hosted-llm-evals-lab/actions/workflows/test.yml"><img alt="tests" src="https://github.com/jameswniu/self-hosted-llm-evals-lab/actions/workflows/test.yml/badge.svg?branch=main"></a>
+<img alt="golden repo" src="https://img.shields.io/badge/%E2%98%85-golden_repo-d4a017?style=flat-square&labelColor=0c1013">
 <img alt="python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-dfe3e0?style=flat-square&labelColor=0c1013">
 <img alt="harness lm-eval v0.4+" src="https://img.shields.io/badge/harness-lm--eval_v0.4%2B-8f9491?style=flat-square&labelColor=0c1013">
 <img alt="model llama 3.1 8B Q4_0" src="https://img.shields.io/badge/model-llama_3.1_8B_Q4__0-8f9491?style=flat-square&labelColor=0c1013">
