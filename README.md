@@ -30,7 +30,7 @@ It is that the same harness says, in the same breath, that n=20 is not enough to
 
 ---
 
-## The 90 second tour
+## Start with the finding
 
 - [The headline finding](#chain-of-thought-made-the-model-worse): every layer of prompt scaffolding made an 8B model less accurate, and self-consistency voting was the only strategy that recovered anything
 - [The part that pays rent](#vote-confidence-is-a-routing-signal): the vote confidence from self-consistency separates the answers you can trust from the ones worth escalating to a bigger model
